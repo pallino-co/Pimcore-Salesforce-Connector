@@ -1,0 +1,23 @@
+[
+    {
+        "name": "salesforce-username",
+        "language": "",
+        "type": "text",
+        "data": "pimcore@syncrasytech.com",
+        "siteId": 0
+    },
+    {
+        "name": "salesforce-password",
+        "language": "",
+        "type": "text",
+        "data": "Demo@123",
+        "siteId": 0
+    },
+    {
+        "name": "salesforce-org",
+        "language": "",
+        "type": "text",
+        "data": "Production",
+        "siteId": 0
+    }
+]

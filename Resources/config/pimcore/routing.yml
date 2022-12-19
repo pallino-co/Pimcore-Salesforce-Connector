@@ -1,0 +1,5 @@
+syncrasy_salesforce:
+    resource: "@SyncrasySalesforceBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
