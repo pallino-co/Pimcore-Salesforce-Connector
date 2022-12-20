@@ -1,8 +1,6 @@
 {
   "name": "syncrasy/pimcore-salesforce-bundle",
   "type": "pimcore-bundle",
-  "version": "1.0.0",
-  "license": "GPL-3.0 license",
   "description": "Pimcore-Salesforce Connector",
   "require": {
     "pimcore/pimcore": ">=10.0"
