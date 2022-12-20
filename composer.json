@@ -1,8 +1,9 @@
 {
   "name": "syncrasy/salesforce-bundle",
   "type": "pimcore-bundle",
-  "version": "0.0.1",
-  "description": "The Process Manager allows you to manage (define,execute...) arbitrary processes/commands in the Pimcore backend.",
+  "version": "1.0.0",
+  "license": "GPL-3.0 license",
+  "description": "Pimcore-Salesforce Connector",
   "require": {
     "pimcore/pimcore": ">=10.0"
   },
