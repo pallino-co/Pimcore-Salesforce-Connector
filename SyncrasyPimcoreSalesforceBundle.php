@@ -6,9 +6,9 @@ namespace Syncrasy\PimcoreSalesforceBundle;
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
 use Syncrasy\PimcoreSalesforceBundle\Installer\Installer;
 
-class SyncrasyPimcorePimcoreSalesforceBundle extends AbstractPimcoreBundle
+class SyncrasyPimcoreSalesforceBundle extends AbstractPimcoreBundle
 {
-    const BUNDLE_NAME = 'SyncrasyPimcorePimcoreSalesforceBundle';
+    const BUNDLE_NAME = 'SyncrasyPimcoreSalesforceBundle';
     
     public function getJsPaths()
     {
