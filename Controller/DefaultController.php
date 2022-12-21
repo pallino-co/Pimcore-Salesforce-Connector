@@ -1,6 +1,6 @@
 <?php
 
-namespace Syncrasy\SalesforceBundle\Controller;
+namespace Syncrasy\PimcoreSalesforceBundle\Controller;
 
 use Pimcore\Controller\FrontendController;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,8 +10,8 @@ use Pimcore\Model\DataObject\SelesForceSetup as SalesForceSetupModel;
 use Pimcore\Model\DataObject\User as UserModel;
 use Pimcore\Model\DataObject\Contact as ContactModel;
 use Pimcore\Model\DataObject\Account as AccountModel;
-use Syncrasy\SalesforceBundle\Service\Sfconnect;
-use Syncrasy\SalesforceBundle\Service\CommonService;
+use Syncrasy\PimcoreSalesforceBundle\Service\Sfconnect;
+use Syncrasy\PimcoreSalesforceBundle\Service\CommonService;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject;
 

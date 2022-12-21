@@ -1,6 +1,6 @@
 <?php
 
-namespace Syncrasy\SalesforceBundle\Tests\Controller;
+namespace Syncrasy\PimcoreSalesforceBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

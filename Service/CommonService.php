@@ -7,7 +7,7 @@
  * 
  */
 
-namespace Syncrasy\SalesforceBundle\Service;
+namespace Syncrasy\PimcoreSalesforceBundle\Service;
 
 use Pimcore\Model\DataObject\SelesForceSetup as SalesForceSetupModel;
 use Pimcore\Model\DataObject\ClassDefinition;

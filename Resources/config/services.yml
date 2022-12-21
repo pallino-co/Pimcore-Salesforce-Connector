@@ -9,18 +9,18 @@ services:
         # if you need to do this, you can override this setting on individual services
         public: false
     
-    Syncrasy\SalesforceBundle\Installer\Installer:
+    Syncrasy\PimcoreSalesforceBundle\Installer\Installer:
         public: true
         arguments:
-            $bundle: "@=service('kernel').getBundle('SyncrasySalesforceBundle')"
+            $bundle: "@=service('kernel').getBundle('SyncrasyPimcoreSalesforceBundle')"
 
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
-    Syncrasy\SalesforceBundle\Controller\:
+    Syncrasy\PimcoreSalesforceBundle\Controller\:
         resource: '../../Controller'
         public: true
         tags: ['controller.service_arguments']
 
-    Syncrasy\SalesforceBundle\EventListener\ObjectListener :  
+    Syncrasy\PimcoreSalesforceBundle\EventListener\ObjectListener :  
         tags:
               - { name: kernel.event_listener, event: pimcore.dataobject.postUpdate, method: onPostUpdate }

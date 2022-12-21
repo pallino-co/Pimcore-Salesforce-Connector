@@ -2,19 +2,18 @@
   "name": "syncrasy/pimcore-salesforce-bundle",
   "type": "pimcore-bundle",
   "description": "Pimcore-Salesforce Connector",
-  "minimum-stability": "dev",
   "require": {
     "pimcore/pimcore": ">=10.0"
   },
   "autoload": {
     "psr-4": {
-        "Syncrasy\\SalesforceBundle\\": ""
+        "Syncrasy\\PimcoreSalesforceBundle\\": ""
     }
   },
   "extra": {
     "pimcore": {
       "bundles": [
-        "Syncrasy\\SalesforceBundle\\SyncrasySalesforceBundle"
+        "Syncrasy\\PimcoreSalesforceBundle\\SyncrasyPimcoreSalesforceBundle"
       ]
     }
   }

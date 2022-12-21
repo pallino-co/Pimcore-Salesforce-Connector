@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Syncrasy\SalesforceBundle\Service;
+namespace Syncrasy\PimcoreSalesforceBundle\Service;
 
 use Pimcore\Model\DataObject;
 use Pimcore\Model\WebsiteSetting;

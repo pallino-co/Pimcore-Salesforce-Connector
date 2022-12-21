@@ -1,6 +1,6 @@
 <?php
 
-namespace Syncrasy\SalesforceBundle\Installer;
+namespace Syncrasy\PimcoreSalesforceBundle\Installer;
 
 use Pimcore\Extension\Bundle\Installer\SettingsStoreAwareInstaller;
 use Pimcore\Db;

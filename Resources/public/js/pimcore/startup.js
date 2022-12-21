@@ -1,8 +1,8 @@
-pimcore.registerNS("pimcore.plugin.SyncrasySalesforceBundle");
+pimcore.registerNS("pimcore.plugin.SyncrasyPimcoreSalesforceBundle");
 
-pimcore.plugin.SyncrasySalesforceBundle = Class.create(pimcore.plugin.admin, {
+pimcore.plugin.SyncrasyPimcoreSalesforceBundle = Class.create(pimcore.plugin.admin, {
     getClassName: function () {
-        return "pimcore.plugin.SyncrasySalesforceBundle";
+        return "pimcore.plugin.SyncrasyPimcoreSalesforceBundle";
     },
 
     initialize: function () {
@@ -10,7 +10,7 @@ pimcore.plugin.SyncrasySalesforceBundle = Class.create(pimcore.plugin.admin, {
     },
 
     pimcoreReady: function (params, broker) {
-        // alert("SyncrasySalesforceBundle ready!");
+        // alert("SyncrasyPimcoreSalesforceBundle ready!");
     },
     postOpenObject: function (object, type) {
         console.log('-------------');
@@ -20,29 +20,29 @@ pimcore.plugin.SyncrasySalesforceBundle = Class.create(pimcore.plugin.admin, {
             console.log('-------------',object.data.data);
             var pimClassFields;
             var sfObjectChange = object.edit.dataFields.salesforceobject.component;
-            SyncrasySalesforceBundlePlugin.getSfClassAjax(function(store){
+            SyncrasyPimcoreSalesforceBundlePlugin.getSfClassAjax(function(store){
                 sfObjectChange.setStore(store);
                 sfObjectChange.setValue(object.data.data.salesforceobject);
                 console.log('------sfObjectChange.getValue()-------',sfObjectChange.getValue());
                 if(sfObjectChange.getValue()!='') {
-                SyncrasySalesforceBundlePlugin.getSfFieldAjax(sfObjectChange.getValue(), function (store) {
+                SyncrasyPimcoreSalesforceBundlePlugin.getSfFieldAjax(sfObjectChange.getValue(), function (store) {
                     sfObjectFields = store;
                 });
             }
                 
             });
-            SyncrasySalesforceBundlePlugin.getPimClassAjax(function(store){
+            SyncrasyPimcoreSalesforceBundlePlugin.getPimClassAjax(function(store){
                 pimClassChange.setStore(store);
                 pimClassChange.setValue(object.data.data.pimcoreclass);
                 if(pimClassChange.getValue() != '') {
-                SyncrasySalesforceBundlePlugin.getPimFieldAjax(pimClassChange.getValue(), function (store) {
+                SyncrasyPimcoreSalesforceBundlePlugin.getPimFieldAjax(pimClassChange.getValue(), function (store) {
                     pimClassFields = store;
                 });
             }
             });
             pimClassChange.addListener('select', function (combo, record, eOpts) {
                 if(record.data.value != '') {
-                    SyncrasySalesforceBundlePlugin.getPimFieldAjax(record.data.value, function (store) {
+                    SyncrasyPimcoreSalesforceBundlePlugin.getPimFieldAjax(record.data.value, function (store) {
                         pimClassFields = store;
                     });
                 }
@@ -56,7 +56,7 @@ pimcore.plugin.SyncrasySalesforceBundle = Class.create(pimcore.plugin.admin, {
             var sfObjectFields;
             sfObjectChange.addListener('select', function (combo, record, eOpts) {
                 if(record.data.value != '') {
-                    SyncrasySalesforceBundlePlugin.getSfFieldAjax(record.data.value, function (store) {
+                    SyncrasyPimcoreSalesforceBundlePlugin.getSfFieldAjax(record.data.value, function (store) {
                         sfObjectFields = store;
                     });
                 }
@@ -184,4 +184,4 @@ pimcore.plugin.SyncrasySalesforceBundle = Class.create(pimcore.plugin.admin, {
     
 });
 
-var SyncrasySalesforceBundlePlugin = new pimcore.plugin.SyncrasySalesforceBundle();
+var SyncrasyPimcoreSalesforceBundlePlugin = new pimcore.plugin.SyncrasyPimcoreSalesforceBundle();

@@ -1,6 +1,6 @@
 <?php
 
-namespace Syncrasy\SalesforceBundle\DependencyInjection;
+namespace Syncrasy\PimcoreSalesforceBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

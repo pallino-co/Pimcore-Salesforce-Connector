@@ -5,12 +5,12 @@
  * @author PGS
  */
 
-namespace Syncrasy\SalesforceBundle\EventListener;
+namespace Syncrasy\PimcoreSalesforceBundle\EventListener;
 
 use Pimcore\Logger;
 use Pimcore\Event\Model\DataObjectEvent;
-use Syncrasy\SalesforceBundle\Service\CommonService;
-use Syncrasy\SalesforceBundle\Service\Sfconnect;
+use Syncrasy\PimcoreSalesforceBundle\Service\CommonService;
+use Syncrasy\PimcoreSalesforceBundle\Service\Sfconnect;
 use Pimcore\Model\DataObject;
 
 class ObjectListener {
