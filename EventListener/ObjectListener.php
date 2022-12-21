@@ -69,7 +69,8 @@ class ObjectListener {
                         if ($pimData->$fieldforsfidGetter() != $sfid) {
                             $pimData->set($fieldforsfid, $sfid);
                         }
-                        \Pimcore\Log\Simple::log('salesForceConnectListener', 'child' . $Children);
+                        $pimData->save();
+                        \Pimcore\Log\Simple::log('salesForceConnectListener', 'child' .json_encode($Children) );
                         \Pimcore\Log\Simple::log('salesForceConnectListener', $sfid);
                     } else {
                         $result = $sfObject->insert($sObjectType, $preparedArray);
