@@ -4,10 +4,14 @@ namespace Syncrasy\PimcoreSalesforceBundle;
 
 
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
+use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Syncrasy\PimcoreSalesforceBundle\Installer\Installer;
+
 
 class SyncrasyPimcoreSalesforceBundle extends AbstractPimcoreBundle
 {
+    use PackageVersionTrait;
+
     const BUNDLE_NAME = 'SyncrasyPimcoreSalesforceBundle';
     
     public function getJsPaths()
@@ -30,4 +34,5 @@ class SyncrasyPimcoreSalesforceBundle extends AbstractPimcoreBundle
     {
         return self::BUNDLE_NAME;
     }
+
 }
