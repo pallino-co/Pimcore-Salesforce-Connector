@@ -17,7 +17,12 @@ class SyncrasyPimcoreSalesforceBundle extends AbstractPimcoreBundle
     public function getJsPaths()
     {
         return [
-            '/bundles/syncrasypimcoresalesforce/js/pimcore/startup.js'
+            '/bundles/syncrasypimcoresalesforce/js/pimcore/startup.js',
+            '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/main.js',
+            '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/mappingLeftPanel.js',
+            '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/configItem.js',
+            '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/tabs/basicConfig.js',
+            '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/tabs/columnConfiguration.js'
         ];
     }
 

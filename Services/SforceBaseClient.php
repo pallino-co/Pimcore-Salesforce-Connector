@@ -1,6 +1,6 @@
 <?php
 
-namespace Syncrasy\PimcoreSalesforceBundle\Service;
+namespace Syncrasy\PimcoreSalesforceBundle\Services;
 
 class SforceBaseClient {
 

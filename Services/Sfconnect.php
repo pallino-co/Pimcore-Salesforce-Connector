@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Syncrasy\PimcoreSalesforceBundle\Service;
+namespace Syncrasy\PimcoreSalesforceBundle\Services;
 
 use Pimcore\Model\DataObject;
 use Pimcore\Model\WebsiteSetting;
@@ -110,7 +110,7 @@ class Sfconnect {
 
                 if ($sobject->createable && $sobject->layoutable) {
 
-                    $options[] = array("key" => $sobject->label, "value" => $sobject->name);
+                    $options[] = array("name" => $sobject->label, "id" => $sobject->name);
                 }
             }
             return $options;
@@ -129,7 +129,7 @@ class Sfconnect {
             $result = $this->authData->describeSObject($type);
             foreach ($result->fields as $key => $field) {
                 if ($field->createable) {
-                    $options[] = array("key" => $field->label, "value" => $field->name);
+                    $options[] = array("name" => $field->label, "id" => $field->name);
                 }
             }
             return $options;
