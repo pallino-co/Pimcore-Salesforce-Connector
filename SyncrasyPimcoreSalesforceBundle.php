@@ -22,7 +22,8 @@ class SyncrasyPimcoreSalesforceBundle extends AbstractPimcoreBundle
             '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/mappingLeftPanel.js',
             '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/configItem.js',
             '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/tabs/basicConfig.js',
-            '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/tabs/columnConfiguration.js'
+            '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/tabs/columnConfiguration.js',
+            '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/helpers/classTree.js'
         ];
     }
 

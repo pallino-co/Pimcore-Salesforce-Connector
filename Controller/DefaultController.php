@@ -11,6 +11,7 @@ use Syncrasy\PimcoreSalesforceBundle\Services\Sfconnect;
 use Syncrasy\PimcoreSalesforceBundle\Services\CommonService;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject;
+use Syncrasy\PimcoreSalesforceBundle\Services;
 
 /**
  * @package PimcoreSalesforceBundle\Controller
@@ -18,6 +19,11 @@ use Pimcore\Model\DataObject;
  */
 class DefaultController extends AdminController
 {
+    protected const SUCCESS = 'success';
+    protected const ERROR = 'error';
+    protected const LIMIT = 'limit';
+    protected const CLASS_NAME = 'Channel';
+    protected const MESSAGE = 'message';
 
     
 
@@ -109,6 +115,8 @@ class DefaultController extends AdminController
         $pimUniqueField = $request->get('pimUniqueField'.$mappingId);
         $sfUniqueField = $request->get('sfUniqueField'.$mappingId);
         $fieldForSfId = $request->get('fieldForSfId'.$mappingId);
+        $mappingJson = $request->get('mappingJson');
+        $lang = $request->get('lang');
 
         $mapping = Mapping::getById($mappingId);
         if($mapping){
@@ -127,13 +135,101 @@ class DefaultController extends AdminController
             if($fieldForSfId ){
                 $mapping->setFieldForSfId($fieldForSfId );
             }
+            if($mappingJson){
+                $mapping->setColumnAttributeMapping($mappingJson);
+            }
+            if($lang){
+                $mapping->setLanguage($lang);
+            }
             $mapping->save();
             return $this->json([
                 'success' => true
             ]);
         }else {
-            $msg = $this->trans('dHub_channel_not_found_relaod_admin');
+            $msg = $this->trans('psc_channel_not_found_relaod_admin');
             return $this->json(['success' => false, 'msg' => $msg]);
         }
     }
+
+
+    /**
+     * @Route("/get-available-languages")
+     * @return JsonResponse
+     */
+    public function getAvailableLanguagesAction() {
+
+        $locales = \Pimcore\Tool::getSupportedLocales();
+        $availableLanguages = \Pimcore\Tool::getValidLanguages();
+        $fieldArray = array();
+
+        foreach ($availableLanguages as $language) {
+            $fieldArrayTemp = array();
+            $fieldArrayTemp['name'] = $locales[$language];
+            $fieldArrayTemp['value'] = $language;
+            $fieldArray[] = $fieldArrayTemp;
+        }
+
+        return $this->json(["languages" => $fieldArray]);
+    }
+
+    /**
+     * @Route("/get-class-definition-for-column-config", methods={"GET"})
+     *
+     * @param Request $request
+     *
+     * @return \Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse
+     * @throws Exception
+     */
+    public function getClassDefinitionForColumnConfigAction(Request $request)
+    {
+        $class = DataObject\ClassDefinition::getById($request->get('id'));
+        $objectId = intval($request->get('oid'));
+        $filteredDefinitions = DataObject\Service::getCustomLayoutDefinitionForGridColumnConfig($class, $objectId);
+        $layoutDefinitions = isset($filteredDefinitions['layoutDefinition']) ? $filteredDefinitions['layoutDefinition'] : false;
+        $filteredFieldDefinition = isset($filteredDefinitions['fieldDefinition']) ? $filteredDefinitions['fieldDefinition'] : false;
+        $class->setFieldDefinitions([]);
+        $result = [];
+        $result['objectColumns']['childs'] = $layoutDefinitions->getChilds();
+        $result['objectColumns']['nodeLabel'] = 'object_columns';
+        $result['objectColumns']['nodeType'] = 'object';
+        Services\ClassificationStoreService::updateObjectLayout($filteredDefinitions);
+        Services\ClassificationStoreService::setBricksLayout($class, $result, $filteredFieldDefinition);
+      return $this->json($result);
+    }
+
+    /**
+     * @Route("/get-classification-store-for-column-config", methods={"GET"})
+     *
+     * @param Request $request
+     *
+     * @return \Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse
+     * @throws Exception
+     */
+    public function getClassificationStoreForColumnConfigAction(Request $request){
+        $request =  Services\ClassificationStoreService::getStore($request->get('id'));
+        return $this->json($request);
+     }
+
+     /**
+     * Get sheet header columns
+     * @Route("/mapping-header-import")
+     * @param Request $request
+     * @return string|JsonResponse
+     */
+    public function columnHeaderImportAction(Request $request) {
+        $mappingId = intval($request->get('id'));
+        $rowsColumns = array();
+        $success = false;
+        $config = [];
+        try {
+            $rowsColumns = Services\MappingService::getSheetColumns($mappingId);
+        } catch (\Exception $e) {
+           return $this->json([self::SUCCESS => false, self::MESSAGE => $e->getMessage()]);
+        }
+        $success = ((isset($rowsColumns['col']) && count($rowsColumns['col']) > 0));
+        $msg = (isset($rowsColumns['col']) && count($rowsColumns['col']) > 0) ? $success : "psc_invalid_header_row_no";
+        return $this->json([self::SUCCESS => $success, 'rowColumns' => $rowsColumns['col'], "config" => $rowsColumns['config'], self::MESSAGE => $msg]);
+    }
+
+
 }

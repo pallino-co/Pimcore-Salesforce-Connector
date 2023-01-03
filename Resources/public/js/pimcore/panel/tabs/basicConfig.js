@@ -27,7 +27,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
         let salesforceUniqueField = this.getSalesforceUniqueField()
         let channelName = this.data[0].key;
         let infoImage = "/bundles/pimcoreadmin/img/flat-color-icons/info.svg";
-        let infoMsg = "<img src='" + infoImage + "' style='vertical-align: middle' > " + "<span><i>" + t('dHub_channel_name_append_msg1') + "'" + channelName + "'" + t('dHub_channel_name_append_msg2') + "</i></span>";
+        let infoMsg = "<img src='" + infoImage + "' style='vertical-align: middle' > " + "<span><i>" + t('psc_channel_name_append_msg1') + "'" + channelName + "'" + t('psc_channel_name_append_msg2') + "</i></span>";
 
         let infoPanel = new Ext.create('Ext.panel.Panel', {
             style: {
@@ -45,8 +45,8 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
             },
             waitTitle: t('please_wait'),
             border: false,
-            iconCls: 'dHub_basic_config',
-            title: t("dHub_basic_configuration"),
+            iconCls: 'psc_basic_config',
+            title: t("psc_basic_configuration"),
             items: [pimclassCombo, getSalesforceObjectCombo, fieldForSfId, pimcoreUniqueField, salesforceUniqueField],
             dockedItems: [
                 {
@@ -86,7 +86,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
                 },
                 success: function (form, response) {
                     saveCall.setDisabled(false);
-                    pimcore.helpers.showNotification(t('dHub_success'), t('dHub_basic_config_saved_successfully'), 'success');
+                    pimcore.helpers.showNotification(t('psc_success'), t('psc_basic_config_saved_successfully'), 'success');
                     // reload code
                     outerScope.reloadChannel(outerScope.mappingId, 0); 
                 },
@@ -94,7 +94,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
                     response = response.response;
                     response = Ext.decode(response.responseText);
                     saveButton.setDisabled(false);
-                    Ext.MessageBox.alert(t('dHub_failure'), t(response.msg));
+                    Ext.MessageBox.alert(t('psc_failure'), t(response.msg));
                 }
             });
         }
@@ -153,6 +153,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
     },
 
     getSalesforceObjectCombo: function () {
+        let loadMsg = Ext.MessageBox.wait(t('psc_read_column'));
         let availableClasses = new Ext.data.JsonStore({
             proxy: {
                 type: 'ajax',

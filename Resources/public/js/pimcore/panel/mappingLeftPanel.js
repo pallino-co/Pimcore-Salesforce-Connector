@@ -122,7 +122,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
                             if (result.success) {
                                 this.openTabPanel(result.id, 0);
                             } else if (result.success === false && result.id) {
-                                pimcore.helpers.showNotification(t("error"), t("dHub_name_already_in_use"));
+                                pimcore.helpers.showNotification(t("error"), t("psc_name_already_in_use"));
                             } else {
                                 pimcore.helpers.showNotification(t('error'), t('error_info_msg'), 'error');
                             }
@@ -132,10 +132,10 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
                         }.bind(this)
                     });
                 } else {
-                    pimcore.helpers.showNotification(t('error'), t('dHub_invalid_name'), 'error');
+                    pimcore.helpers.showNotification(t('error'), t('psc_invalid_name'), 'error');
                 }
             } else {
-                pimcore.helpers.showNotification(t('error'), t('dHub_key_required'), 'error');
+                pimcore.helpers.showNotification(t('error'), t('psc_key_required'), 'error');
             }
         }
     },

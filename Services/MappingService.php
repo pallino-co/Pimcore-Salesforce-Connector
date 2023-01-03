@@ -2,6 +2,8 @@
 
 namespace Syncrasy\PimcoreSalesforceBundle\Services;
 
+use Syncrasy\PimcoreSalesforceBundle\Model\Mapping;
+
 class MappingService
 {
     /**
@@ -21,17 +23,36 @@ class MappingService
             }
         }
         return [
-            'importConfigId' => '',
             'dataPreview' => count($previewData) ? [$previewData] : [],
             'dataFields' => $dataField,
-            'targetFields' => [],
             'templateAttribute' => $data[0] ?? [],
             'selectedGridColumns' => [],
-            'resolverSettings' => [],
-            'rows' => 1,
             'cols' => count($previewData),
             'classId' => $classId,
         ];
+    }
+
+    /**
+     * @param $objectId
+     * @return array[]
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception
+     */
+    public static function getSheetColumns($objectId)
+    {
+        $object = Mapping::getById($objectId);
+        $classId = $object->getPimcoreClassId();
+        $salesforceId = $object->getSalesforceObject();
+        $columns = ['col' => [], 'config' => []];
+        $sfObject = new Sfconnect();
+        $options = $sfObject->getObjectsFields($salesforceId);
+        foreach($options as $key=>$value){
+            $columns['col'][] = $value['id'];
+        }
+        if (count($columns['col']) > 0) {
+            $columns['config'] = self::getMappingInfo([$columns['col']], $classId);
+        }
+        return $columns;
     }
 
 
