@@ -153,7 +153,6 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
     },
 
     getSalesforceObjectCombo: function () {
-        let loadMsg = Ext.MessageBox.wait(t('psc_read_column'));
         let availableClasses = new Ext.data.JsonStore({
             proxy: {
                 type: 'ajax',

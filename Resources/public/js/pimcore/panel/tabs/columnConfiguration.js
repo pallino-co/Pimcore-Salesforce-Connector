@@ -630,6 +630,71 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.columnConfiguration = 
 
         menu.showAt(e.pageX, e.pageY);
     },
+    getChangeTypeMenu: function (record) {
+        var operators = Object.keys(pimcore.object.gridcolumn.operator);
+        var childs = [];
+        for (var i = 0; i < operators.length; i++) {
+            let operatorName = operators[i];
+            let operatorClass = pimcore.object.gridcolumn.operator[operatorName].prototype;
+            if (this.allowedOperatorList.indexOf(operatorClass.class) > -1) {
+                childs.push(pimcore.object.gridcolumn.operator[operators[i]].prototype.getConfigTreeNode());
+            }
+        }
+
+        childs.sort(
+            function (x, y) {
+                return x.text < y.text ? -1 : 1;
+            }
+        );
+
+        var menu = [];
+        for (var i = 0; i < childs.length; i++) {
+            var child = childs[i];
+            var item = new Ext.menu.Item({
+                text: child.text,
+                iconCls: child.iconCls,
+                hideOnClick: true,
+                handler: function (node, newType) {
+                    var jsClass = newType.toLowerCase();
+                    var replacement = pimcore.object.gridcolumn.operator[jsClass].prototype.getConfigTreeNode();
+
+                    replacement.expanded = node.data.expanded;
+                    replacement.expandable = node.data.expandable;
+                    replacement.leaf = node.data.leaf;
+
+                    replacement = node.createNode(replacement);
+                    replacement.data.configAttributes.label = node.data.configAttributes.label;
+                    replacement.data.text = node.data.configAttributes.label;
+                    var parent = node.parentNode;
+                    var originalChilds = [];
+
+                    node.eachChild(function (child) {
+                        originalChilds.push(child);
+                    });
+
+
+                    node.removeAll();
+                    parent.replaceChild(replacement, node);
+
+                    replacement.appendChild(originalChilds);
+
+                    var element = this.getConfigElement(replacement.data.configAttributes);
+                    this.showConfigWindow(element, replacement);
+                    this.updatePreviewArea();
+                }.bind(this, record, child.configAttributes.class)
+            });
+            menu.push(item);
+        }
+
+        var changeTypeItem = new Ext.menu.Item({
+            text: t('convert_to'),
+            iconCls: "pimcore_icon_convert",
+            hideOnClick: false,
+            menu: menu
+        });
+        return changeTypeItem;
+
+    },
     updatePreviewArea: function () {
         var rootNode = this.selectionPanel.getRootNode();
 

@@ -39,12 +39,23 @@ class Mapping extends  \Pimcore\Model\AbstractModel
         try {
             $tag = new self();
             $tag->getDao()->getByName($name);
-
             return $tag;
         } catch (\Exception $e) {
             return null;
         }
     }
+
+    public static function getByPimcoreId(string $pimcoreId)
+    {
+        try {
+            $tag = new self();
+            $tag->getDao()->getByPimcoreId($pimcoreId);
+            return $tag;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
 
     public function setValues($data = [])
     {

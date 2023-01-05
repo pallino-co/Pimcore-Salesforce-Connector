@@ -4,11 +4,9 @@ namespace Syncrasy\PimcoreSalesforceBundle\Controller;
 
 use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Syncrasy\PimcoreSalesforceBundle\Model\Mapping;
 use Syncrasy\PimcoreSalesforceBundle\Services\Sfconnect;
-use Syncrasy\PimcoreSalesforceBundle\Services\CommonService;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject;
 use Syncrasy\PimcoreSalesforceBundle\Services;
@@ -25,7 +23,7 @@ class DefaultController extends AdminController
     protected const CLASS_NAME = 'Channel';
     protected const MESSAGE = 'message';
 
-    
+
 
     /**
      * @Route("/pimfields/{class_name}", name="get_pimfields")

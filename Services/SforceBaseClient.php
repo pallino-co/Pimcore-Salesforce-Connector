@@ -2,6 +2,8 @@
 
 namespace Syncrasy\PimcoreSalesforceBundle\Services;
 
+use PHPUnit\Exception;
+
 class SforceBaseClient {
 
     protected $sforce;
@@ -122,12 +124,18 @@ class SforceBaseClient {
         if ($this->loginScopeHeader != NULL) {
             $this->sforce->__setSoapHeaders(array($this->loginScopeHeader));
         }
-        $result = $this->sforce->login(array(
-            'username' => $username,
-            'password' => $password
-        ));
-        $result = $result->result;
-        $this->_setLoginHeader($result);
+
+        try {
+            $result = $this->sforce->login(array(
+                'username' => $username,
+                'password' => $password
+            ));
+            $result = $result->result;
+            $this->_setLoginHeader($result);
+        }catch (\Exception $e){
+            throw new \Exception($e->getMessage());
+            return null;
+        }
 
         return $result;
     }
@@ -281,8 +289,6 @@ class SforceBaseClient {
                 array_push($header_array, $header);
             }
         }
-
-
         $this->sforce->__setSoapHeaders($header_array);
     }
 
@@ -704,7 +710,7 @@ class SforceBaseClient {
     /**
      * Retrieves available category groups along with their data category structure for objects specified in the request.
      *
-     * @param DataCategoryGroupSobjectTypePair $pairs 
+     * @param DataCategoryGroupSobjectTypePair $pairs
      * @param bool $topCategoriesOnly   Object Type
      * @return DescribeLayoutResult
      */
@@ -1145,7 +1151,7 @@ class SObject {
     }
 
     /**
-     * 
+     *
      * @param string $contents
      * @return array
      */
@@ -1167,7 +1173,7 @@ class SObject {
         if (!$xml_values)
             return; //Hmm...
 
-            
+
 //Initializations
         $xml_array = array();
         $parents = array();

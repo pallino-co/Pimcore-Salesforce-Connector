@@ -12,10 +12,10 @@ use Monolog\Handler\RotatingFileHandler;
  * @package Syncrasy\PimcoreSalesforceBundle\Lib\Logger
  */
 class PSCLogger
-{ 
+{
     /** const string - log source */
     const SOURCE = 'PSC';
-    
+
     /** const string - name of the log file */
     const DEFAULT_LOG_NAME = 'PSC.log';
 
@@ -34,7 +34,7 @@ class PSCLogger
     const CRITICAL = Logger::CRITICAL;
     const ALERT = Logger::ALERT;
     const EMERGENCY = Logger::EMERGENCY;
- 
+
     public static function getMonoLogger($logName = null, $logLevel = null, array $config = [])
     {
         $monoLogger = new Logger($logName);
@@ -58,21 +58,21 @@ class PSCLogger
         return $monoLogger;
     }
 
-    public static function log($message, $type = self::INFO)
+    public static function log($message, $type = self::INFO,$source = self::SOURCE)
     {
         try {
-            $source = self::SOURCE; 
-            
+
+
             $data = [
                 'source' => $source,
                 'message' => $message,
                 'type' => Logger::getLevelName($type),
                 'logtime' => time()
-            ]; 
-            self::getMonoLogger($source.'.log')->log($type, $message); 
-            
-            self::logInApplicationLogger($data);   
-            
+            ];
+            self::getMonoLogger($source.'.log')->log($type, $message);
+
+            self::logInApplicationLogger($data);
+
         } catch (\Exception $exception) {
             self::logException($source, 'Error in save psc_logs', $exception);
         }
@@ -83,11 +83,11 @@ class PSCLogger
         $message = $message.'---'.$exception->getMessage();
         self::log($message, Logger::ERROR);
     }
-     
+
     public static function logInApplicationLogger($logDetails)
-    {  
-        $logger = \Pimcore\Log\ApplicationLogger::getInstance($logDetails['source'],true); 
+    {
+        $logger = \Pimcore\Log\ApplicationLogger::getInstance($logDetails['source'],true);
         $logger->log($logDetails['type'], $logDetails['message']);
-        
+
     }
 }

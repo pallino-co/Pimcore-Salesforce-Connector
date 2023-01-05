@@ -33,6 +33,15 @@ class Dao extends AbstractDao
         $this->assignVariablesToModel($data);
     }
 
+    public function getByPimcoreId($pimcoreId)
+    {
+        $data = $this->db->fetchRow("SELECT * FROM " . $this->db->quoteIdentifier(self::TABLE_NAME) . " WHERE pimcoreClassId = ?", $pimcoreId);
+        if (!$data["id"]) {
+            throw new \Exception("mapping with id " . $pimcoreId . " not found");
+        }
+        $this->assignVariablesToModel($data);
+    }
+
     /**
      * Save object to database
      *

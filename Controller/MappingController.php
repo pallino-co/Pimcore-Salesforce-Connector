@@ -7,7 +7,6 @@ use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Pimcore\Tool\Admin;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
 use Syncrasy\PimcoreSalesforceBundle\Model\Mapping;
 use Syncrasy\PimcoreSalesforceBundle\Services\MappingService;
 

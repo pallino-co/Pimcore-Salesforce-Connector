@@ -9,12 +9,14 @@ declare(strict_types=1);
 
 namespace Syncrasy\PimcoreSalesforceBundle\Services;
 
+use mysql_xdevapi\Exception;
 use Pimcore\Model\DataObject;
 use Pimcore\Model\WebsiteSetting;
+use Syncrasy\PimcoreSalesforceBundle\Lib\PSCLogger;
 
 class Sfconnect {
 
-   
+
     const SANDBOXWSDLFIlE = __DIR__ . '/wsdl/sandbox.wsdl';
     const PRODUCTIONWSDLFIlE = __DIR__ . '/wsdl/production.wsdl';
     public $authData = '';
@@ -30,13 +32,18 @@ class Sfconnect {
         $sforg = WebsiteSetting::getByName('salesforce-org')->getData();
         $mySforceConnection = new SforceEnterpriseClient();
         $mySforceConnection->createConnection($sforg=='sandbox' ? self::SANDBOXWSDLFIlE : self::PRODUCTIONWSDLFIlE );
-        $mySforceConnection->login($sfUsername, $sfPassword);
-         \Pimcore\Log\Simple::log('salesForceConnectListener', "sf-create:" . json_encode($mySforceConnection));
+        try {
+            $mySforceConnection->login($sfUsername, $sfPassword);
+            PSCLogger::log(json_encode($mySforceConnection),PSCLogger::INFO,'psc-sf-auth');
+        }catch (\Exception $e){
+            PSCLogger::log($e->getMessage(),PSCLogger::ERROR,'psc-sf-auth');
+            return;
+        }
+
         return $mySforceConnection;
     }
 
     public function insert($class, $data) {
-
         $records = array();
         $record = new \stdClass();
         foreach ($data as $key => $val) {
@@ -46,21 +53,16 @@ class Sfconnect {
                 $record->fieldsToNull[] = $key;
             }
         }
-        
+
         $records[] = $record;
         try {
-            \Pimcore\Log\Simple::log('salesForceConnectListener', "sf-create: body : " . json_encode($records));
+            PSCLogger::log("body : " . json_encode($records),PSCLogger::INFO,'psc-sf-create');
             $response = $this->authData->create($records,$class);
-            
-            \Pimcore\Log\Simple::log('salesForceConnectListener', "sf-create:" . json_encode($response));
-            $debug = \Pimcore\Log\ApplicationLogger::getInstance();
-            $debug->debug("sf-create:" .json_encode($response));
+            PSCLogger::log("response : " . json_encode($response),PSCLogger::INFO,'psc-sf-create');
             return $response;
         } catch (\Exception $e) {
             echo 'Caught exception: ', $e->getMessage(), "\n";
-            \Pimcore\Log\Simple::log('salesForceConnectListener', "sf-create:" . $e->getMessage());
-            $debug = \Pimcore\Log\ApplicationLogger::getInstance();
-            $debug->error("sf-create:" . $e->getMessage());
+            PSCLogger::log($e->getMessage(),PSCLogger::ERROR,'psc-sf-create');
         }
     }
 
@@ -79,20 +81,24 @@ class Sfconnect {
             $record->Id = $id;
         }
         $records[] = $record;
+        try {
+            PSCLogger::log("body : " . json_encode($records),PSCLogger::INFO,'psc-sf-update');
         $response = $this->authData->update($records,$class);
-        \Pimcore\Log\Simple::log('salesForceConnectListener', "sf-update:" . \GuzzleHttp\json_encode($response));
-        $debug = \Pimcore\Log\ApplicationLogger::getInstance();
-        $debug->debug("sf-update:" . \GuzzleHttp\json_encode($response));
+            PSCLogger::log("response : " . json_encode($response),PSCLogger::INFO,'psc-sf-update');
+        } catch (\Exception $e) {
+            echo 'Caught exception: ', $e->getMessage(), "\n";
+            PSCLogger::log($e->getMessage(),PSCLogger::ERROR,'psc-sf-update');
+        }
     }
 
     public function save($class, $data, $uniqueField = '') {
-        
+
     }
 
     public function query(string $query) {
 
         $result = $this->authData->query($query);
-        
+
         return $result->records ? $result->records[0]->Id : null;
     }
 
@@ -105,7 +111,7 @@ class Sfconnect {
 
         try {
             $result = $this->authData->describeGlobal();
-            
+
             foreach ($result->sobjects as $key => $sobject) {
 
                 if ($sobject->createable && $sobject->layoutable) {
@@ -116,15 +122,13 @@ class Sfconnect {
             return $options;
         } catch (\Exception $e) {
             echo 'Caught exception: ', $e->getMessage(), "\n";
-            \Pimcore\Log\Simple::log('salesForceConnectListener', "get object options:" . $e->getMessage());
-            $debug = \Pimcore\Log\ApplicationLogger::getInstance();
-            $debug->error("sf-fetch-data:" . $e->getMessage());
+            PSCLogger::log($e->getMessage(),PSCLogger::ERROR,'psc');
         }
     }
 
     public function getObjectsFields($type): array {
 
-        
+
         try {
             $result = $this->authData->describeSObject($type);
             foreach ($result->fields as $key => $field) {
@@ -135,9 +139,7 @@ class Sfconnect {
             return $options;
         } catch (\Exception $e) {
             echo 'Caught exception: ', $e->getMessage(), "\n";
-            \Pimcore\Log\Simple::log('salesForceConnectListener', "get object options:" . $e->getMessage());
-            $debug = \Pimcore\Log\ApplicationLogger::getInstance();
-            $debug->error("get object field options:" . $e->getMessage());
+            PSCLogger::log($e->getMessage(),PSCLogger::ERROR,'psc');
         }
     }
 
