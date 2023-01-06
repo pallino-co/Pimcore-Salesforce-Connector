@@ -59,9 +59,11 @@ class DefaultController extends AdminController
 
         $sfClass = $request->get('class_name');
         $sfObject = new Sfconnect();
-        $options = $sfObject->getObjectsFields($sfClass);
-        $result = array('objects' => $options);
-        echo json_encode($result);
+        if($sfObject->authData) {
+            $options = $sfObject->getObjectsFields($sfClass);
+            $result = array('objects' => $options);
+            echo json_encode($result);
+        }
         die;
     }
 
@@ -73,10 +75,11 @@ class DefaultController extends AdminController
 
 
         $sfObject = new Sfconnect();
-
-        $options = $sfObject->getObjects();
-        $result = array('objects' => $options);
-        echo json_encode($result);
+        if($sfObject->authData) {
+            $options = $sfObject->getObjects();
+            $result = array('objects' => $options);
+            echo json_encode($result);
+        }
         die;
     }
 

@@ -13,11 +13,12 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle = Class.create(pimcore.plugin.adm
         var extrasMenu = pimcore.globalmanager.get("layout_toolbar").extrasMenu;
         if(extrasMenu){
             extrasMenu.insert(extrasMenu.items.length+1, {
-                text: t("plugin_psc"),
-                iconCls: "plugin_pmicon",
+                text: t("psc_plugin"),
+                iconCls: "psc_icon",
                 cls: "pimcore_main_menu",
                 handler: this.showSalesforceConnector.bind(this)
-            });
+            }
+            );
         }
         if(extrasMenu){
             extrasMenu.updateLayout();
@@ -26,7 +27,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle = Class.create(pimcore.plugin.adm
     },
     showSalesforceConnector: function(config){
         config = defaultValue(config,{});
-        if (pimcore.globalmanager.get("plugin_psc_cnf")) {
+        if (pimcore.globalmanager.get("psc_plugin_cnf")) {
             return Ext.getCmp("pimcore_panel_tabs").setActiveItem("pimcore_plugin_psc_panel");
         } else {
             return pimcore.globalmanager.add("plugin_psc_cnf", new pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.main(config));

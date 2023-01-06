@@ -4,16 +4,16 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
         if (!this.panel) {
             this.panel = new Ext.Panel({
                 border: false,
-                title: t('pimcore_psc_my_mapping'),
+                title: t('psc_my_mapping'),
                 layout: "border",
                 items: [{
                     region: 'center',
                     layout: 'border',
                     items: [{
-                        title: t('pimcore_psc_my_mapping'),
+                        title: t('psc_my_mapping'),
                         region: 'west',
                         width: 250,
-                        id: 'pimcore_psc_my_mapping_id',
+                        id: 'psc_my_mapping_id',
                         split: true,
                         layout: 'accordion',
                         header: false,
@@ -45,7 +45,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
                 }
             });
             this.tree = Ext.create('Ext.tree.Panel', {
-                title: t('pimcore_psc_my_mapping'),
+                title: t('psc_my_mapping'),
                 store: mappingStore,
                 rootVisible: false,
                 autoScroll: true,
@@ -62,7 +62,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
                 listeners: this.getTreeNodeListeners(),
                 tbar: {
                     items: [{
-                        text: t('pimcore_psc_add_channel'),
+                        text: t('psc_add_channel'),
                         iconCls: "pimcore_icon_add",
                         handler: this.addNewMappingForm.bind(this)
                     }]
@@ -82,8 +82,8 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
     },
     addNewMappingForm: function () {
 
-        Ext.MessageBox.prompt(t('pimcore_psc_input_title'),
-            t('pimcore_psc_input_label'),
+        Ext.MessageBox.prompt(t('psc_input_title'),
+            t('psc_input_label'),
             this.addNewMapping.bind(this), null, null, "");
     },
     getTreeNodeListeners: function (treeType) {

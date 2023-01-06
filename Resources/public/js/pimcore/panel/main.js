@@ -5,13 +5,13 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.main = Class.create({
         const letfPanel = new pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel();
         if (!this.panel) {
         this.panel = new Ext.TabPanel({
-            title: t("plugin_psc"),
+            title: t("psc_plugin"),
             closable: true,
             deferredRender: false,
             forceLayout: true,
             activeTab: 0,
             id: "pimcore_plugin_psc_panel",
-            iconCls: "plugin_pmicon_header",
+            iconCls: "psc_icon_header",
             items: [letfPanel.getTabPanel()]
         });
 
