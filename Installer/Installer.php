@@ -33,21 +33,21 @@ class Installer extends SettingsStoreAwareInstaller
 
         $db = $this->getDb();
         $db->query("CREATE TABLE `syncrasy_salesforce_mapping` (
-                          `id` int(11) NOT NULL AUTO_INCREMENT,
-                          `name` varchar(100) NOT NULL,
-                          `columnAttributeMapping` text NOT NULL,
-                          `userOwner` int(11) DEFAULT NULL,
-                          `language` varchar(45) NOT NULL,
-                          `description` text DEFAULT NULL,
-                          `creationDate` int(11) NOT NULL,
-                          `modificationDate` int(11) NOT NULL,
-                          `pimcoreClassId` varchar(80) DEFAULT NULL,
-                          `salesforceObject` varchar(80) DEFAULT NULL,
-                          `fieldForSfId` varchar(80) DEFAULT NULL,
-                          `pimcoreUniqueField` varchar(80) DEFAULT NULL,
-                          `salesforceUniqueField` varchar(80) DEFAULT NULL,
-                          PRIMARY KEY (`id`)
-                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+                      `id` int(11) NOT NULL AUTO_INCREMENT,
+                      `name` varchar(100) NOT NULL,
+                      `columnAttributeMapping` text NOT NULL,
+                      `userOwner` int(11) DEFAULT NULL,
+                      `language` varchar(45) NOT NULL,
+                      `description` text DEFAULT NULL,
+                      `creationDate` int(11) NOT NULL,
+                      `modificationDate` int(11) NOT NULL,
+                      `pimcoreClassId` varchar(80) DEFAULT NULL,
+                      `salesforceObject` varchar(80) DEFAULT NULL,
+                      `fieldForSfId` varchar(80) DEFAULT NULL,
+                      `pimcoreUniqueField` varchar(80) DEFAULT NULL,
+                      `salesforceUniqueField` varchar(80) DEFAULT NULL,
+                      PRIMARY KEY (`id`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
         );
 
     }

@@ -195,7 +195,8 @@ class DefaultController extends AdminController
         $result['objectColumns']['nodeType'] = 'object';
         Services\ClassificationStoreService::updateObjectLayout($filteredDefinitions);
         Services\ClassificationStoreService::setBricksLayout($class, $result, $filteredFieldDefinition);
-      return $this->json($result);
+
+      return $this->adminJson($result);
     }
 
     /**
@@ -208,7 +209,7 @@ class DefaultController extends AdminController
      */
     public function getClassificationStoreForColumnConfigAction(Request $request){
         $request =  Services\ClassificationStoreService::getStore($request->get('id'));
-        return $this->json($request);
+        return $this->adminJson($request);
      }
 
      /**
