@@ -32,26 +32,22 @@ class Installer extends SettingsStoreAwareInstaller
     {
 
         $db = $this->getDb();
-        $db->query("CREATE TABLE `application_logs` (
-                      `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-                      `pid` int(11) DEFAULT NULL,
-                      `timestamp` datetime NOT NULL,
-                      `message` text DEFAULT NULL,
-                      `priority` enum('emergency','alert','critical','error','warning','notice','info','debug') DEFAULT NULL,
-                      `fileobject` varchar(1024) DEFAULT NULL,
-                      `info` varchar(1024) DEFAULT NULL,
-                      `component` varchar(190) DEFAULT NULL,
-                      `source` varchar(190) DEFAULT NULL,
-                      `relatedobject` int(11) unsigned DEFAULT NULL,
-                      `relatedobjecttype` enum('object','document','asset') DEFAULT NULL,
-                      `maintenanceChecked` tinyint(1) DEFAULT NULL,
-                      PRIMARY KEY (`id`),
-                      KEY `component` (`component`),
-                      KEY `timestamp` (`timestamp`),
-                      KEY `relatedobject` (`relatedobject`),
-                      KEY `priority` (`priority`),
-                      KEY `maintenanceChecked` (`maintenanceChecked`)
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+        $db->query("CREATE TABLE `syncrasy_salesforce_mapping` (
+                          `id` int(11) NOT NULL AUTO_INCREMENT,
+                          `name` varchar(100) NOT NULL,
+                          `columnAttributeMapping` text NOT NULL,
+                          `userOwner` int(11) DEFAULT NULL,
+                          `language` varchar(45) NOT NULL,
+                          `description` text DEFAULT NULL,
+                          `creationDate` int(11) NOT NULL,
+                          `modificationDate` int(11) NOT NULL,
+                          `pimcoreClassId` varchar(80) DEFAULT NULL,
+                          `salesforceObject` varchar(80) DEFAULT NULL,
+                          `fieldForSfId` varchar(80) DEFAULT NULL,
+                          `pimcoreUniqueField` varchar(80) DEFAULT NULL,
+                          `salesforceUniqueField` varchar(80) DEFAULT NULL,
+                          PRIMARY KEY (`id`)
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
         );
 
     }
