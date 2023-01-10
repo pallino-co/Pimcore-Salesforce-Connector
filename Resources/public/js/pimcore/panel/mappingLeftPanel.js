@@ -89,9 +89,9 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
     getTreeNodeListeners: function (treeType) {
         treeNodeListeners = {
             'itemclick': this.onTreeNodeClick.bind(this),
+            "itemcontextmenu": this.onTreeNodeContextmenu.bind(this),
             'beforeitemappend': function (thisNode, newChildNode,
                 index, eOpts) {
-                    console.log('-----------------');
                 newChildNode.data.leaf = true;
                 newChildNode.data.expaned = true;
                 newChildNode.data.iconCls = "pimcore_icon_link"
@@ -100,13 +100,119 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
         }
         return treeNodeListeners;
     },
-
+    onTreeNodeContextmenu: function (tree, record, item, index, e, eOpts) {
+        // if(record.data.id>0) {
+        e.stopEvent();
+        tree.select();
+        const menu = new Ext.menu.Menu();
+        if(record.data.id>0) {
+            menu.add(new Ext.menu.Item({
+                text: t('rename'),
+                iconCls: "pimcore_icon_key",
+                handler: this.renameMapping.bind(this, tree, record)
+            }));
+            menu.add(new Ext.menu.Item({
+                text: t('delete'),
+                iconCls: "pimcore_icon_delete",
+                handler: this.deleteMapping.bind(this, tree, record)
+            }));
+        }
+        menu.showAt(e.pageX, e.pageY);
+    },
     onTreeNodeClick: function (tree, record, item, index, e, eOpts) {
         console.log(record)
         if (record.data.id > 0) {
             this.openTabPanel(record.data.id, record.data.parentId);
         }
     },
+    renameMapping: function (tree, record) {
+        const options = {
+            sourceTree: tree,
+            elementType: "object",
+            elementSubType: record.data.type,
+            id: record.data.id,
+            default: record.data.text
+        };
+
+        let completeCallback = null;
+        if (options.elementType === "object") {
+            completeCallback = this.rename.bind(this, options);
+        } else {
+            throw new Error("type " + options.elementType + " not supported!");
+        }
+
+        Ext.MessageBox.prompt(t('rename'), t('psc_enter_the_new_name'), completeCallback, window, false, options.default);
+
+    },
+    rename: function (options, button, value, object) {
+        if (button === "ok") {
+            if(typeof value !="undefined" && value!=null && value!='') {
+                if (pimcore.helpers.isValidFilename(value)) {
+                    const id = options.id;
+                    const newName = pimcore.helpers.getValidFilename(value, "object");
+
+                    Ext.Ajax.request({
+                        url: "/admin/pimcoresalesforce/mapping/rename",
+                        params: {
+                            id: id,
+                            name: newName
+                        },
+                        success: function (response) {
+                            const result = Ext.decode(response.responseText);
+                            if (result.success) {
+                                const existingTab = Ext.getCmp("syncrasy_salesforce_mapping_panel_" + id);
+                                if (existingTab) {
+                                    existingTab.destroy();
+                                }
+                                this.tree.getStore().load({
+                                    node: this.tree.getRootNode(),
+                                });
+                                this.openTabPanel(id, 0);
+                                pimcore.elementservice.refreshNodeAllTrees("object", options.id);
+                            } else if (result.success === false && result.id) {
+                                pimcore.helpers.showNotification(t("error"), t("name_already_in_use"));
+                            } else {
+                                pimcore.helpers.showNotification(t('error'), t('error_info_msg'), 'error');
+                            }
+                        }.bind(this)
+                    });
+                }else {
+                    pimcore.helpers.showNotification(t('error'), t('psc_invalid_name'), 'error');
+                }
+            }else {
+                pimcore.helpers.showNotification(t('error'), t('psc_key_required'), 'error');
+            }
+        }
+    },
+    // delete mapping
+    deleteMapping: function (tree, record) {
+        Ext.Msg.confirm(t('psc_delete_channel'), t("psc_delete_confirm"), function (btnText) {
+            if (btnText === "yes") {
+                Ext.Ajax.request({
+                    url: "/admin/pimcoresalesforce/mapping/delete",
+                    params: {
+                        id: record.data.id
+                    },success: function (response) {
+                        const result = Ext.decode(response.responseText);
+
+                        if (result.success === true) {
+                            pimcore.helpers.showNotification(t('success'), t('psc_item_delete_success'), 'success');
+                            this.tree.getStore().load({
+                                node: this.tree.getRootNode()
+                            });
+
+                        }
+
+                    }.bind(this)
+                });
+
+                const activeTabIndex = this.editPanel.items.findIndex('id', "syncrasy_salesforce_mapping_panel_" + record.data.id);
+                this.editPanel.remove(this.editPanel.items.getAt(activeTabIndex));
+                record.remove();
+            }
+        }, this);
+    },
+
     addNewMapping: function (button, value, object) {
         if (button === 'ok') {
             if (typeof value != "undefined" && value != null && value != '') {

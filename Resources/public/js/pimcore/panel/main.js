@@ -20,7 +20,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.main = Class.create({
         tabPanel.setActiveItem("pimcore_plugin_psc_panel");
 
         this.panel.on("destroy", function () {
-            pimcore.globalmanager.remove("plugin_psc_cnf");
+            pimcore.globalmanager.remove("psc_plugin_cnf");
         }.bind(this));
 
         if (config.activeTab) {

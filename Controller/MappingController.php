@@ -17,11 +17,13 @@ use Syncrasy\PimcoreSalesforceBundle\Services\MappingService;
 class MappingController extends AdminController
 
 {
+    public const CONFIG_NAME = 'plugin_psc';
     protected const SUCCESS = 'success';
     protected const ERROR = 'error';
     protected const LIMIT = 'limit';
     protected const CLASS_NAME = 'Mapping';
     protected const MESSAGE = 'message';
+
 
     /**
      * add mapping
@@ -51,6 +53,7 @@ class MappingController extends AdminController
         try {
             $name = $request->get('name');
             $object = Mapping::getByName(trim($name));
+            $this->checkPermission(self::CONFIG_NAME);
             if (!$object instanceof Mapping) {
                 $newObject = new Mapping();
                 $newObject->setName($name);
@@ -110,5 +113,51 @@ class MappingController extends AdminController
             'salesforceUniqueField' => $mapping->getSalesforceUniqueField(),
             'fieldForSfId' => $mapping->getFieldForSfId()
         ];
+    }
+
+    /**
+     * delete mapping
+     * @Route("/delete")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function deleteAction(Request $request)
+    {
+        $this->checkPermission(self::CONFIG_NAME);
+        try {
+            $id = intval($request->query->get('id'));
+            $object = Mapping::getById($id);
+            $object->delete();
+            return $this->json([self::SUCCESS => true]);
+        } catch (Exception $ex) {
+            return $this->json([self::SUCCESS => false]);
+        }
+    }
+
+    /**
+     * rename mapping
+     * @Route("/rename")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function renameAction(Request $request)
+    {
+        $this->checkPermission(self::CONFIG_NAME);
+        try {
+            $id = intval($request->query->get('id'));
+            $name = trim($request->query->get('name'));
+            $object = Mapping::getByName(trim($name));
+            if(!$object instanceof Channel){
+                $object = Mapping::getById($id);
+                $object->setName($name);
+                $object->save();
+                return $this->json([self::SUCCESS => true, "id" => $object->getId(), self::MESSAGE => '']);
+            } else {
+                $message = 'prevented renaming object because object with same path+key already exists';
+                return $this->json([self::SUCCESS => false, self::MESSAGE => $message, 'id' => $object->getId(),]);
+            }
+        } catch (Exception $ex) {
+            return $this->json([self::SUCCESS => false, self::MESSAGE => $ex->getMessage()]);
+        }
     }
 }
