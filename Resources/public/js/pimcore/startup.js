@@ -27,10 +27,12 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle = Class.create(pimcore.plugin.adm
     },
     showSalesforceConnector: function(config){
         config = defaultValue(config,{});
+        console.log(pimcore.globalmanager.get("psc_plugin_cnf"));
+        console.log(Ext.getCmp("pimcore_plugin_psc_panel"));
         if (pimcore.globalmanager.get("psc_plugin_cnf")) {
             return Ext.getCmp("pimcore_panel_tabs").setActiveItem("pimcore_plugin_psc_panel");
         } else {
-            return pimcore.globalmanager.add("plugin_psc_cnf", new pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.main(config));
+            return pimcore.globalmanager.add("psc_plugin_cnf", new pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.main(config));
         }
 
     },

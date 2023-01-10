@@ -43,6 +43,7 @@ class ExportService
         $templateColumns = $columnAttributeMapping['templateAttribute'];
         $templateColumnsWithLabel = [];
         $fields = [];
+        $helperDefinition = [];
         foreach ($selectedGridColumnAssoc as $key => $selectedGridColumn) {
             if ($selectedGridColumn['attributes']['class'] != 'Ignore') {
                 $templateColumnsWithLabel[$selectedGridColumn['key']] = $templateColumns[$key];
