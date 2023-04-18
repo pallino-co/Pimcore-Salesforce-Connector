@@ -22,8 +22,17 @@ services:
         public: true
         tags: ['controller.service_arguments']
 
+    # auto-register all commands as services
+    Syncrasy\PimcoreSalesforceBundle\Command\:
+        resource: '../../Command/*'
+        tags: [ 'console.command' ]
+
+
     Syncrasy\PimcoreSalesforceBundle\Services\ClassificationStoreService:
         public: true
+
+    Syncrasy\PimcoreSalesforceBundle\Lib\DataObject\GridColumnConfig\Service:
+        public: ture
 
     Syncrasy\PimcoreSalesforceBundle\EventListener\ObjectListener :  
         tags:

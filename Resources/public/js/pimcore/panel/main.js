@@ -1,7 +1,7 @@
 pimcore.registerNS("pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.main");
 pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.main = Class.create({
     initialize: function (config) {
-        config = defaultValue(config, {});
+
         const letfPanel = new pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel();
         if (!this.panel) {
         this.panel = new Ext.TabPanel({

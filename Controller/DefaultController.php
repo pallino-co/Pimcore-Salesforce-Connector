@@ -34,6 +34,7 @@ class DefaultController extends AdminController
         $pimClass = $request->get('class_name');
         $fields = ClassDefinition::getById($pimClass);
         $options = [];
+
         if ($fields) {
             foreach ($fields->getFieldDefinitions() as $field) {
 
@@ -118,6 +119,8 @@ class DefaultController extends AdminController
         $fieldForSfId = $request->get('fieldForSfId'.$mappingId);
         $mappingJson = $request->get('mappingJson');
         $lang = $request->get('lang');
+        $importFileUploadPath = $request->get('importObjectPath');
+
 
         $mapping = Mapping::getById($mappingId);
         if($mapping){
@@ -141,6 +144,11 @@ class DefaultController extends AdminController
             }
             if($lang){
                 $mapping->setLanguage($lang);
+            }
+            if($importFileUploadPath){
+                $mapping->setImportFileUploadPath($importFileUploadPath);
+                $folder =  DataObject::getByPath($importFileUploadPath);
+                $mapping->setImportFilePathId($folder->getId());
             }
             $mapping->save();
             return $this->json([

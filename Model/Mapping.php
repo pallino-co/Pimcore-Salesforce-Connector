@@ -7,13 +7,15 @@ class Mapping extends  \Pimcore\Model\AbstractModel
 {
     public $id;
     public $name;
-
+    public $type;
     public $pimcoreClassId;
+    public $importFilePathId;
     public $salesforceObject;
     public $fieldForSfId;
     public $pimcoreUniqueField;
     public $salesforceUniqueField;
     public $columnAttributeMapping;
+    public $importFileUploadPath;
     public $language;
     public $userOwner;
     public $description;
@@ -56,6 +58,8 @@ class Mapping extends  \Pimcore\Model\AbstractModel
         }
     }
 
+    
+
 
     public function setValues($data = [])
     {
@@ -86,6 +90,50 @@ class Mapping extends  \Pimcore\Model\AbstractModel
     {
         $this->id = $id;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getType(){
+        return $this->type;
+    }
+
+     /**
+     * @param mixed $name
+     */
+    public function setType($type){
+        $this->type = $type;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImportFileUploadPath(){
+        return $this->importFileUploadPath;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setImportFileUploadPath($importFileUploadPath){
+        $this->importFileUploadPath = $importFileUploadPath;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImportFilePathId(){
+        return $this->importFilePathId;
+    }
+
+    /**
+     * @param mixed $name
+     */
+
+     public function setImportFilePathId($importFilePathId){
+        $this->importFilePathId = $importFilePathId;
+     }
+
 
     /**
      * @return mixed

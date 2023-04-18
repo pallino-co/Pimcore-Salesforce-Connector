@@ -33,7 +33,9 @@ class MappingController extends AdminController
      */
     public function getMappingTreeAction(Request $request)
     {
+        $type = $request->get('type');
         $obj = new Mapping\Listing();
+        $obj->setCondition("type = ?",[$type]);
         $mapping = $obj->load();
         $mappings = [];
         foreach ($mapping as $row) {
@@ -52,11 +54,13 @@ class MappingController extends AdminController
     {
         try {
             $name = $request->get('name');
+            $type = $request->get('type');
             $object = Mapping::getByName(trim($name));
             $this->checkPermission(self::CONFIG_NAME);
             if (!$object instanceof Mapping) {
                 $newObject = new Mapping();
                 $newObject->setName($name);
+                $newObject->setType($type);
                 $mappingAttributes = $this->encodeJson(MappingService::getMappingInfo([]));
                 $newObject->setLanguage(Admin::getCurrentUser()->getLanguage());
                 $newObject->setColumnAttributeMapping($mappingAttributes);
@@ -86,6 +90,7 @@ class MappingController extends AdminController
         try {
             $id = $request->get('id');
             $object = Mapping::getById(trim($id));
+            
             $data[] = $this->buildItem($object);
             $data['lang'] = !empty($object->getLanguage()) ? $object->getLanguage() : Admin::getCurrentUser()->getLanguage();
             $data['columnAttributeMapping'] = json_decode(json_encode($object->getColumnAttributeMapping()), true);
@@ -111,7 +116,10 @@ class MappingController extends AdminController
             'pimcoreUniqueField' => $mapping->getPimcoreUniqueField(),
             'salesforceObject'=> $mapping->getSalesforceObject(),
             'salesforceUniqueField' => $mapping->getSalesforceUniqueField(),
-            'fieldForSfId' => $mapping->getFieldForSfId()
+            'fieldForSfId' => $mapping->getFieldForSfId(),
+            'type' => $mapping->getType(),
+            'importFilePath' => $mapping->getImportFileUploadPath(),
+            'importFilePathId' => $mapping->getImportFilePathId()
         ];
     }
 

@@ -17,7 +17,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
                         split: true,
                         layout: 'accordion',
                         header: false,
-                        items: [this.getMappingTree()]
+                        items: [this.getMappingExportTree(),this.getMappingTree()]
                     }, this.getMappingEditContainer()]
                 }]
             });
@@ -40,12 +40,13 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
                         rootProperty: 'nodes'
                     },
                     extraParams: {
-                        limit: 15
+                        limit: 15,
+                        type: 'import'
                     }
                 }
             });
             this.tree = Ext.create('Ext.tree.Panel', {
-                title: t('psc_my_mapping'),
+                title: t('psc_my_import_mapping'),
                 store: mappingStore,
                 rootVisible: false,
                 autoScroll: true,
@@ -64,12 +65,58 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
                     items: [{
                         text: t('psc_add_channel'),
                         iconCls: "pimcore_icon_add",
-                        handler: this.addNewMappingForm.bind(this)
+                        handler: this.addNewMappingForm.bind(this,'import')
                     }]
                 }
             });
         }
         return this.tree;
+    },
+    getMappingExportTree: function () {
+        if (!this.Exporttree) {
+            let mappingStore = Ext.create('Ext.data.TreeStore', {
+                // Named Store
+                storeId: 'dataStore',
+                proxy: {
+                    type: 'ajax',
+                    url: '/admin/pimcoresalesforce/mapping/tree',
+                    reader: {
+                        type: 'json',
+                        totalProperty: 'total',
+                        rootProperty: 'nodes'
+                    },
+                    extraParams: {
+                        limit: 15,
+                        type: 'export'
+                    }
+                }
+            });
+            this.Exporttree = Ext.create('Ext.tree.Panel', {
+                title: t('psc_my_export_mapping'),
+                store: mappingStore,
+                rootVisible: false,
+                autoScroll: true,
+                containerScroll: true,
+                root: {
+                    id: '0',
+                    iconCls: "pimcore_icon_home",
+                    text: t('home'),
+                    expanded: true,
+                    reload: true,
+                    draggable: false,
+                    allowChildren: true,
+                },
+                listeners: this.getTreeNodeListeners(),
+                tbar: {
+                    items: [{
+                        text: t('psc_add_export_mapping'),
+                        iconCls: "pimcore_icon_add",
+                        handler: this.addNewMappingForm.bind(this,'export')
+                    }]
+                }
+            });
+        }
+        return this.Exporttree;
     },
     getMappingEditContainer: function() {
         if (!this.editPanel) {
@@ -80,11 +127,10 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
         return this.editPanel;
 
     },
-    addNewMappingForm: function () {
-
+    addNewMappingForm: function (type) {
         Ext.MessageBox.prompt(t('psc_input_title'),
             t('psc_input_label'),
-            this.addNewMapping.bind(this), null, null, "");
+            this.addNewMapping.bind(this,type), null, null, "");
     },
     getTreeNodeListeners: function (treeType) {
         treeNodeListeners = {
@@ -95,6 +141,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
                 newChildNode.data.leaf = true;
                 newChildNode.data.expaned = true;
                 newChildNode.data.iconCls = "pimcore_icon_link"
+                newChildNode.set('qtip', 'id = '+newChildNode.data.id)
             }
 
         }
@@ -213,7 +260,8 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
         }, this);
     },
 
-    addNewMapping: function (button, value, object) {
+    addNewMapping: function (type,button, value, object) {
+        console.log(type)
         if (button === 'ok') {
             if (typeof value != "undefined" && value != null && value != '') {
                 console.log(value);
@@ -221,7 +269,8 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
                     Ext.Ajax.request({
                         url: "/admin/pimcoresalesforce/mapping/add",
                         params: {
-                            name: value
+                            name: value,
+                            type: type
                         },
                         success: function (response) {
                             const result = Ext.decode(response.responseText);
@@ -235,6 +284,9 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
                             this.tree.getStore().load({
                                 node: this.tree.getRootNode()
                             });
+                            this.Exporttree.getStore().load({
+                                node: this.Exporttree.getRootNode()
+                            })
                         }.bind(this)
                     });
                 } else {
@@ -261,6 +313,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.mappingLeftPanel = Class.cr
             success: function (response) {
                 pimcore.helpers.loadingHide();
                 let data = Ext.decode(response.responseText);
+                console.log(data)
                 data.columnAttributeMapping = Ext.decode(data.data.columnAttributeMapping);
                 var fieldPanel = new pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.configItem(data, id, this, parentTypeId);
             }.bind(this)

@@ -26,7 +26,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle = Class.create(pimcore.plugin.adm
         this.getConfig();
     },
     showSalesforceConnector: function(config){
-        config = defaultValue(config,{});
+       
         console.log(pimcore.globalmanager.get("psc_plugin_cnf"));
         console.log(Ext.getCmp("pimcore_plugin_psc_panel"));
         if (pimcore.globalmanager.get("psc_plugin_cnf")) {

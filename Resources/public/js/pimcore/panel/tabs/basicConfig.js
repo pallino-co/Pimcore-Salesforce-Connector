@@ -1,6 +1,7 @@
 pimcore.registerNS("pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig");
 pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.create(pimcore.element.abstract, {
     initialize: function (data, mappingId, parentPanel, parentType) {
+        console.log('hSVHJDVCUHV  UVDHC',data);
         this.data = data.data;
         this.mappingId = mappingId;
         this.parentPanel = parentPanel;
@@ -10,6 +11,9 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
         this.fieldForSfId = this.data[0].fieldForSfId ? this.data[0].fieldForSfId : null;
         this.sfUniqueField = this.data[0].salesforceUniqueField ? this.data[0].salesforceUniqueField : null;
         this.pimUniqueField = this.data[0].pimcoreUniqueField ? this.data[0].pimcoreUniqueField : null;
+        this.importFolderPath = this.data[0].importFilePath ? this.data[0].importFilePath : null;
+        this.type = this.data[0].type ? this.data[0].type : null;
+        this.importFolderId = this.data[0].importFilePathId ? this.data[0].importFilePathId : null;
 
 
     },
@@ -25,6 +29,14 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
         let fieldForSfId = this.getFieldForSfId()
         let pimcoreUniqueField = this.getPimcoreUniqueField()
         let salesforceUniqueField = this.getSalesforceUniqueField()
+        let importFilePath = this.getImportFilePathField()
+        let items = [];
+        items.push(pimclassCombo, getSalesforceObjectCombo, fieldForSfId, pimcoreUniqueField, salesforceUniqueField)
+        if(this.type === 'import'){
+            items.push(importFilePath)
+        }
+        
+        this.getImportFilePathField()
         let channelName = this.data[0].key;
         let infoImage = "/bundles/pimcoreadmin/img/flat-color-icons/info.svg";
         let infoMsg = "<img src='" + infoImage + "' style='vertical-align: middle' > " + "<span><i>" + t('psc_channel_name_append_msg1') + "'" + channelName + "'" + t('psc_channel_name_append_msg2') + "</i></span>";
@@ -47,7 +59,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
             border: false,
             iconCls: 'psc_basic_config',
             title: t("psc_basic_configuration"),
-            items: [pimclassCombo, getSalesforceObjectCombo, fieldForSfId, pimcoreUniqueField, salesforceUniqueField],
+            items: items,
             dockedItems: [
                 {
                     xtype: 'toolbar',
@@ -88,7 +100,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
                     saveCall.setDisabled(false);
                     pimcore.helpers.showNotification(t('psc_success'), t('psc_basic_config_saved_successfully'), 'success');
                     // reload code
-                    outerScope.reloadChannel(outerScope.mappingId, 0); 
+                    outerScope.reloadChannel(outerScope.mappingId, 0);
                 },
                 failure: function (form, response) {
                     response = response.response;
@@ -101,8 +113,8 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
 
     },
 
-    reloadChannel: function (id, parentTypeId) { 
-        const existingPanel = Ext.getCmp("syncrasy_salesforce_mapping_panel_" + id); 
+    reloadChannel: function (id, parentTypeId) {
+        const existingPanel = Ext.getCmp("syncrasy_salesforce_mapping_panel_" + id);
 
         if (existingPanel) {
             existingPanel.destroy();
@@ -120,7 +132,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
                 var fieldPanel = new pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.configItem(data, id, this.parentPanel, parentTypeId);
             }.bind(this)
         });
-        
+
     },
 
     getPimClassCombo: function () {
@@ -140,7 +152,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
             }]
         });
         availableClasses.load();
-        let combo = this.getCombo(availableClasses, 'psc_select_pimcore_class', 'pimcoreClassId'+this.mappingId);
+        let combo = this.getCombo(availableClasses, 'psc_select_pimcore_class', 'pimcoreClassId' + this.mappingId);
         combo.value = this.pimcoreClassId;
         let outerScope = this;
         combo.on('select', function (combo, value, index) {
@@ -170,7 +182,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
         });
         availableClasses.load();
         // Create the combo box, attached to the states data store
-        let combo = this.getCombo(availableClasses, 'psc_select_salesforce_object', 'salesforceObjectId'+this.mappingId);
+        let combo = this.getCombo(availableClasses, 'psc_select_salesforce_object', 'salesforceObjectId' + this.mappingId);
         combo.value = this.salesforceObjectId;
         let outerScope = this;
         combo.on('select', function (combo, value, index) {
@@ -189,10 +201,10 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
             success: function (response) {
                 var rdata = Ext.decode(response.responseText);
                 console.log(outerScope.mappingId)
-                var childCombo = Ext.getCmp('fieldForSfId'+outerScope.mappingId);
+                var childCombo = Ext.getCmp('fieldForSfId' + outerScope.mappingId);
                 childCombo.getStore().loadData(rdata.fields)
                 childCombo.setValue('')
-                var childCombo1 = Ext.getCmp('pimUniqueField'+outerScope.mappingId);
+                var childCombo1 = Ext.getCmp('pimUniqueField' + outerScope.mappingId);
                 childCombo1.getStore().loadData(rdata.fields)
                 childCombo1.setValue('')
             }
@@ -205,7 +217,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
             url: `/admin/pimcoresalesforce/default/sffields/${objectName}`,
             success: function (response) {
                 var rdata = Ext.decode(response.responseText);
-                var childCombo = Ext.getCmp('sfUniqueField'+outerScope.mappingId);
+                var childCombo = Ext.getCmp('sfUniqueField' + outerScope.mappingId);
                 childCombo.getStore().loadData(rdata.objects)
                 childCombo.setValue('')
             }
@@ -225,13 +237,13 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
                 }
             },
             listeners: {
-                load: function( outher, records, successful, operation, eOpts ) {
+                load: function (outher, records, successful, operation, eOpts) {
                     console.log(' b kjfgdv  ');
                 }
             }
         });
         availableClasses.load();
-        let combo = this.getCombo(availableClasses, 'psc_select_pim_unique_field', 'pimUniqueField'+this.mappingId);
+        let combo = this.getCombo(availableClasses, 'psc_select_pim_unique_field', 'pimUniqueField' + this.mappingId);
         combo.value = this.pimUniqueField;
 
         return combo;
@@ -248,10 +260,10 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
                     rootProperty: 'objects'
                 }
             },
-            
+
         });
         availableClasses.load();
-        let combo = this.getCombo(availableClasses, 'psc_select_sf_unique_field', 'sfUniqueField'+this.mappingId);
+        let combo = this.getCombo(availableClasses, 'psc_select_sf_unique_field', 'sfUniqueField' + this.mappingId);
         combo.value = this.sfUniqueField;
         return combo;
 
@@ -269,7 +281,7 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
             },
         });
         availableClasses.load();
-        let combo = this.getCombo(availableClasses, 'psc_select_field_for_sf_id', 'fieldForSfId'+this.mappingId);
+        let combo = this.getCombo(availableClasses, 'psc_select_field_for_sf_id', 'fieldForSfId' + this.mappingId);
         combo.value = this.fieldForSfId;
         return combo;
 
@@ -297,6 +309,102 @@ pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.tabs.basicConfig = Class.cr
 
         });
         return combo;
+
+    },
+    getImportFilePathField: function () {
+
+        var outerScope = this;
+        let importFilePathField = new Ext.create('Ext.form.field.Text', {
+
+            fieldLabel: t('psc_import_object_path'),
+            name: 'importObjectPath',
+            enableKeyEvents: true,
+            fieldCls: "pimcore_droptarget_input",
+            value: this.importFolderPath,
+            editable: false,
+            style: {
+                marginLeft: '14px'
+            },
+            width: 715,
+            labelWidth: 220,
+            listeners: {
+                "render": function (el) {
+                    new Ext.dd.DropZone(el.getEl(), {
+                        //reference: this,
+                        ddGroup: "element",
+                        getTargetFromEvent: function (e) {
+                            return this.getEl();
+                        }.bind(el),
+
+                        onNodeOver: function (target, dd, e, data) {
+                            if (data.records.length === 1 && data.records[0].data.elementType === "object" && data.records[0].data.type === "folder") {
+                                return Ext.dd.DropZone.prototype.dropAllowed;
+                            }
+                        },
+                        onNodeDrop: function (target, dd, e, data) {
+                            if (!pimcore.helpers.dragAndDropValidateSingleItem(data)) {
+                                return false;
+                            }
+                            data = data.records[0].data;
+                            if (data.elementType === "object" && data.type === "folder") {
+                                this.setValue(data.path);
+                                outerScope.importFolderId = data.id;
+                                importFilePathRemoveButton.setHidden(false);
+                                importFilePathOpenButton.setHidden(false);
+
+                                return true;
+                            }
+                            return false;
+                        }.bind(el)
+                    });
+                }
+            }
+        });
+
+        let importFilePathOpenButton = Ext.create('Ext.Button', {
+            // text: 'Open uploaded document',
+            iconCls: "pimcore_material_icon_locate pimcore_material_icon",
+            tooltip: t('dHub_show_in_tree'),
+            hidden: !this.importFolderPath,
+            style: {
+                marginLeft: '20px'
+            },
+            handler: function (btn) {
+                try {
+                    console.log(outerScope.importFolderId)
+                    pimcore.treenodelocator.showInTree(outerScope.importFolderId, "object")
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+        });
+
+        let importFilePathRemoveButton = Ext.create('Ext.Button', {
+            // text: 'Open uploaded document',
+            iconCls: 'pimcore_icon_delete',
+            hidden: !this.importFolderPath,
+            tooltip: t('dHub_clear_value'),
+            style: {
+                marginLeft: '20px'
+            },
+            handler: function (btn) {
+                importFilePathField.setValue(null);
+                btn.setHidden(true);
+                importFilePathOpenButton.setHidden(true);
+            }
+        });
+
+
+
+        let exportFilePathFieldSet = new Ext.create('Ext.form.FieldSet', {
+            layout: 'hbox',
+            style: 'border-top: none !important',
+            border: false,
+
+            items: [importFilePathField, importFilePathRemoveButton, importFilePathOpenButton]
+        });
+
+        return exportFilePathFieldSet;
 
     }
 }

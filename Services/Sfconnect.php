@@ -102,9 +102,26 @@ class Sfconnect {
         return $result->records ? $result->records[0]->Id : null;
     }
 
+    public function queryAll(string $query) {
+
+        $result = $this->authData->queryAll($query);
+
+        return $result->records ?? null;
+    }
+
     public function recordExistsQuery($table, $fieldName, $fieldVal): string {
 
         return "select Id from $table where $fieldName = '" . $fieldVal . "'";
+    }
+
+    public function recordsQuery($table, $fields): string {
+
+        $query = "Select Id";
+        foreach ($fields as $field => $mapping){
+            $query .= ", $field";
+        }
+        $query .= " from $table";
+        return $query;
     }
 
     public function getObjects(): array {
