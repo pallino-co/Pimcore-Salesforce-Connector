@@ -28,12 +28,6 @@ services:
         tags: [ 'console.command' ]
 
 
-    Syncrasy\PimcoreSalesforceBundle\Services\ClassificationStoreService:
-        public: true
-
-    Syncrasy\PimcoreSalesforceBundle\Lib\DataObject\GridColumnConfig\Service:
-        public: ture
-
     Syncrasy\PimcoreSalesforceBundle\EventListener\ObjectListener :  
         tags:
               - { name: kernel.event_listener, event: pimcore.dataobject.postUpdate, method: onPostUpdate }

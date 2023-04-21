@@ -6,7 +6,6 @@ namespace Syncrasy\PimcoreSalesforceBundle\Services;
 
 use Pimcore\Cache\RuntimeCache;
 use Pimcore\Model\DataObject\Service;
-use Pimcore\DataObject\GridColumnConfig\ConfigElementInterface;
 use Pimcore\Model\DataObject\AbstractObject;
 
 class ImportService extends Service
@@ -23,27 +22,50 @@ class ImportService extends Service
     {
         $definition = $helperDefinitions[$key];
         $attributes = json_decode(json_encode($definition->attributes));
-        self::doConfig($object,$value,$attributes, $key, $context = []);
+        try {
+            self::doConfig($object, $value, $attributes, $key, $context = []);
+        }catch (\Exception $e){
+        }
         return null;
     }
     public static function doConfig($object,$value,$helperDefinitions, $key, $context = [])
     {
         if($helperDefinitions->type === 'operator'){
             if($helperDefinitions->class ==='LocaleSwitcher'){
-                $config = self::localeSwitcher($object,$value,$helperDefinitions->childs, $key, $context = []);
+                $config = self::localeSwitcher($object,$value,$helperDefinitions, $key, $context = []);
+            }
+            if($helperDefinitions->class ==='AnyGetter'){
+                $config = self::AnyGetter($object,$value,$helperDefinitions, $key, $context = []);
             }
         }
-        if($helperDefinitions->type === 'value'){
-            $object = new \stdClass();
-            $object->value = $value;
-            $object->attribute = $helperDefinitions->attribute;
-            return $object;
-        }
+        $object = new \stdClass();
+        $object->value = $value;
+        $object->attribute = $helperDefinitions->attribute;
+        return $object;
+
     }
     public static function localeSwitcher($object,$value,$helperDefinitions, $key, $context = []){
-        foreach($helperDefinitions as $helperDefinition) {
+        foreach($helperDefinitions->childs as $helperDefinition) {
             $config = self:: doConfig($object, $value, $helperDefinition, $key, $context = []);
-            $object->set($config->attribute,$config->value);
+            $object->set($config->attribute,$config->value,$helperDefinitions->local);
+        }
+    }
+
+    public static function AnyGetter($object,$value,$helperDefinitions, $key, $context = []){
+        foreach($helperDefinitions->childs as $helperDefinition) {
+            $config = self:: doConfig($object, $value, $helperDefinition, $key, $context = []);
+            $classNameListing = '\\Pimcore\\Model\\DataObject\\' . ucfirst($helperDefinitions->param1).'\\Listing';
+            $elementList = new $classNameListing();
+            $elementList->setCondition("$helperDefinitions->attribute = ?", [$config->value]);
+            $elementList->setUnpublished(true);
+            $elementObjects = $elementList->load();
+            if(!empty($elementObjects)) {
+                if ($helperDefinitions->isArrayType) {
+                    $object->set($config->attribute, $elementObjects);
+                } else {
+                    $object->set($config->attribute, $elementObjects[0]);
+                }
+            }
         }
     }
 

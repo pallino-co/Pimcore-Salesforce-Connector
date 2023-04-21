@@ -103,34 +103,5 @@ class ExportService
         return $object;
     }
 
-    public function setImportDataForPimcore($pimcoreClassName, $fields, $language,$records ,$fieldforsfid,$addTitles = true){
-        $request = new Request(['language' => $language]);
-        $helperDefinitions = $this->getHelperDefinitions();
-        $classNameListing = '\\Pimcore\\Model\\DataObject\\' . ucfirst($pimcoreClassName).'\\Listing';
-        $className = '\\Pimcore\\Model\\DataObject\\' . ucfirst($pimcoreClassName);
-
-        foreach ($records as $record){
-            $elementList = new $classNameListing();
-            $elementList->setCondition("$fieldforsfid = ?", [$record->{'Id'}]);
-            $elementObjects = $elementList->load();
-            if(!empty($elementObjects)){
-                $element = $elementObjects[0];
-            }else{
-                $element = new $className();
-            }
-            foreach ($fields as $key => $field) {
-                $fieldDefinition = $element->getClass()->getFieldDefinition($field);
-                if (Service::isHelperGridColumnConfig($field)) {
-                    p_r($helperDefinitions);
-                    if ($helperDefinitions[$field]) {
-                        $value = Service::calculateCellValue($element, $helperDefinitions, $field, ['language' => $language]);
-                    }
-                }
-                p_r($fieldDefinition);
-                die;
-            }
-        }
-
-    }
 
 }

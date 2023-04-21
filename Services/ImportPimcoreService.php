@@ -86,7 +86,13 @@ class ImportPimcoreService
                 $fieldDefinition = $element->getClass()->getFieldDefinition($field);
                 if (Service::isHelperGridColumnConfig($field)) {
                     if ($helperDefinitions[$field]) {
-                        $value = Service::calculateCellValues($element,$record->{$key},$helperDefinitions, $field, ['language' => $language]);
+                        if(property_exists($record,$key)) {
+                            $value = Service::calculateCellValues($element, $record->{$key}, $helperDefinitions, $field, ['language' => $language]);
+                        }
+                    }
+                }else{
+                    if(property_exists($record,$key)) {
+                        $element->set($field, $record->{$key}, $language);
                     }
                 }
             }

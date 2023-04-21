@@ -8,6 +8,7 @@
 namespace Syncrasy\PimcoreSalesforceBundle\EventListener;
 
 use Pimcore\Event\Model\DataObjectEvent;
+use Pimcore\Tool\Admin;
 use Syncrasy\PimcoreSalesforceBundle\Lib\PSCLogger;
 use Syncrasy\PimcoreSalesforceBundle\Services\Sfconnect;
 use Syncrasy\PimcoreSalesforceBundle\Services\ExportService;
@@ -22,7 +23,7 @@ class ObjectListener
      */
     public function onPostUpdate(DataObjectEvent $e)
     {
-        if ($e instanceof DataObjectEvent) {
+        if ($e instanceof DataObjectEvent && Admin::getCurrentUser()) {
             if (($e->getObject()->getType() == 'object' || $e->getObject()->getType() == 'variant')) {
 
                 $mappingObject = Mapping::getByPimcoreId($e->getObject()->geto_classId());
