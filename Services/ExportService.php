@@ -47,7 +47,7 @@ class ExportService
         $helperDefinition = [];
         foreach ($selectedGridColumnAssoc as $key => $selectedGridColumn) {
             if ($selectedGridColumn['attributes']['class'] != 'Ignore') {
-                $templateColumnsWithLabel[$selectedGridColumn['key']] = $templateColumns[$key];
+                $templateColumnsWithLabel[$templateColumns[$key]] = $selectedGridColumn['key'];
                 $fields[trim($templateColumns[$key])] = $selectedGridColumn['key'];
                 if (array_key_exists('isOperator', $selectedGridColumn) && $selectedGridColumn['isOperator']) {
                     $helperDefinition[$selectedGridColumn['key']] = json_decode(json_encode($selectedGridColumn));
@@ -94,9 +94,9 @@ class ExportService
                 $object->id = $value;
             }
             if(is_array($value) && count($value) == 1){
-                $dataSalesforce[$this->templateColumns[$key]] = $value[0];
+                $dataSalesforce[$key] = $value[0];
             }else{
-                $dataSalesforce[$this->templateColumns[$key]] = $value;
+                $dataSalesforce[$key] = $value;
             }
         }
         $object->jsonData = $dataSalesforce;

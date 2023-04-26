@@ -13,7 +13,6 @@ class DataFetcher
         $localeService = $request->getLocale();
         $mappedFieldnames = [];
 
-
         if ($fields) {
             $objectData =[];
             foreach ($fields as $key => $field) {
@@ -31,7 +30,7 @@ class DataFetcher
                     foreach ($validLanguages as $validLanguage) {
                         $localeService->setLocale($validLanguage);
                         $fieldData = $this->getCsvFieldData($request, $field, $object, $validLanguage, $helperDefinitions);
-                        $localizedFieldKey = $field . '-' . $validLanguage;
+                        $localizedFieldKey = $key . '-' . $validLanguage;
                         if (!isset($mappedFieldnames[$localizedFieldKey])) {
                             $mappedFieldnames[$localizedFieldKey] = $mappedFieldnameBase . '-' . $validLanguage;
                         }
@@ -47,7 +46,7 @@ class DataFetcher
                     if (!isset($mappedFieldnames[$field])) {
                         $mappedFieldnames[$field] = $this->mapFieldname($field, $helperDefinitions);
                     }
-                    $objectData[$field] = $fieldData;
+                    $objectData[$key] = $fieldData;
                 }
             }
 

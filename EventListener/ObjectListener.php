@@ -32,6 +32,7 @@ class ObjectListener
                     $sfObject = new Sfconnect();
                     if ($sfObject->authData) {
                         $columnAttributeMapping = json_decode($mappingObject->getColumnAttributeMapping(), true);
+
                         $exportService = new ExportService();
                         $exportService->prepareFieldsAndHelperDefinition($columnAttributeMapping);
                         $fields = $exportService->getFieldsForExport();
