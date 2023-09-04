@@ -7,11 +7,8 @@ use Pimcore\Db;
 
 class Installer extends SettingsStoreAwareInstaller
 {
-
-
-    public function install()
+    public function install(): void
     {
-
         $sourceInstallPath = __DIR__;
         $rootPath = substr($sourceInstallPath, 0, strpos($sourceInstallPath, 'src'));
         $this->installClasses();
@@ -30,9 +27,9 @@ class Installer extends SettingsStoreAwareInstaller
 
     public function installClasses()
     {
-
         $db = $this->getDb();
-        $db->query("CREATE TABLE `syncrasy_salesforce_mapping` (
+        $db->query(
+            "CREATE TABLE `syncrasy_salesforce_mapping` (
                   `id` int(11) NOT NULL AUTO_INCREMENT,
                   `name` varchar(100) NOT NULL,
                   `columnAttributeMapping` text NOT NULL,
@@ -52,9 +49,7 @@ class Installer extends SettingsStoreAwareInstaller
                   PRIMARY KEY (`id`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;"
         );
-
     }
-
 
     public function installWebSiteSetting()
     {
@@ -89,7 +84,6 @@ class Installer extends SettingsStoreAwareInstaller
         $db->query("DROP TABLE IF EXISTS `syncrasy_salesforce_mapping`;");
     }
 
-
     public function deleteWebSiteSetting()
     {
         $sourceInstallPath = __DIR__ . '/Install';
@@ -97,11 +91,11 @@ class Installer extends SettingsStoreAwareInstaller
         $website_settings = json_decode($website_settings, true);
         foreach ($website_settings as $name => $values) {
             $websitesetting = \Pimcore\Model\WebsiteSetting::getByName($values['name']);
-            if ($websitesetting)
+            if ($websitesetting) {
                 $websitesetting->delete();
+            }
         }
     }
-
 
     /**
      * {@inheritdoc}
@@ -110,6 +104,4 @@ class Installer extends SettingsStoreAwareInstaller
     {
         return true;
     }
-
-
 }
