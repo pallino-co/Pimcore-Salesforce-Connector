@@ -1,133 +1,53 @@
 <?php
 
-namespace Syncrasy\SalesforceBundle\Controller;
+namespace Syncrasy\PimcoreSalesforceBundle\Controller;
 
-use Pimcore\Controller\FrontendController;
+use Pimcore\Bundle\AdminBundle\Controller\AdminController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Pimcore\Model\DataObject\SelesForceSetup as SalesForceSetupModel;
-use Pimcore\Model\DataObject\User as UserModel;
-use Pimcore\Model\DataObject\Contact as ContactModel;
-use Pimcore\Model\DataObject\Account as AccountModel;
-use Syncrasy\SalesforceBundle\Service\Sfconnect;
-use Syncrasy\SalesforceBundle\Service\CommonService;
+use Syncrasy\PimcoreSalesforceBundle\Model\Mapping;
+use Syncrasy\PimcoreSalesforceBundle\Services\Sfconnect;
 use Pimcore\Model\DataObject\ClassDefinition;
 use Pimcore\Model\DataObject;
+use Syncrasy\PimcoreSalesforceBundle\Services;
 
-class DefaultController extends FrontendController {
-
-    /**
-     * @Route("/salesforceconnect")
-     */
-    public function indexAction(Request $request) {
-
-       
-
-        die('index');
-
-        $sfObject = new Sfconnect();
-        $sfObject->getObjectsFields('Account');
-        $k = $sfObject->authData;
-
-        $clsMappingExists1 = new AccountModel\Listing();
-        $clsMappingExists1->setCondition('AccountNumber = ? And o_type = ?', ['5555', 'object']);
-        $clsMappingExists1->setLimit(1);
-        $clsMappingExists1->load();
-        $clsObje1 = '';
-        if ($clsMappingExists1) {
-            foreach ($clsMappingExists1->getObjects() as $obj1) {
-                $clsObje1 = $obj1;
-            }
-        }
+/**
+ * @package PimcoreSalesforceBundle\Controller
+ * @Route("/admin/pimcoresalesforce/default")
+ */
+class DefaultController extends AdminController
+{
+    protected const SUCCESS = 'success';
+    protected const ERROR = 'error';
+    protected const LIMIT = 'limit';
+    protected const CLASS_NAME = 'Channel';
+    protected const MESSAGE = 'message';
 
 
-        $clsMappingExists = new SalesForceSetupModel\Listing();
-        $clsMappingExists->setCondition('pimcoreclass = ? And o_type = ?', ['account', 'object']);
-        $clsMappingExists->setLimit(1);
-        $clsMappingExists->load();
-        $clsObje = '';
-        if ($clsMappingExists) {
-            foreach ($clsMappingExists->getObjects() as $obj) {
-                $clsObje = $obj;
-            }
-        }
-
-        // print_r($clsObje->getFieldmapping());
-
-        $data = [];
-        foreach ($clsObje->getFieldmapping() as $val) {
-
-            ///$pimField = 'get'.$val['pimcoreclassfield']->getData();
-            //$sfField = $val['salesforceobjectfield']->getData();
-            $data[] = $val['salesforceobjectfield']->getData();
-        }
-        p_r($data);
-        if (is_object($clsObje) && is_object($clsObje1)) {
-
-            print_r($clsObje1);
-            $s = 'SalesforceId';
-            $k = 'get' . $s;
-            echo $clsObje1->$k();
-            die;
-            $data = CommonService::prepareData($clsObje, $clsObje1);
-            $sObjectType = $clsObje->getsalesforceobject();
-            $uniqueField = $clsObje->getpimuniquefield();
-
-
-            if (count($data)) {
-
-                /* $uniqueFieldVal = $data[$uniqueField];
-                  $query =   $sfObject->recordExistsQuery($sObjectType, $uniqueField, $uniqueFieldVal);
-                  $id = $sfObject->query($query);
-                  if($id) {
-                  $sfObject->update($sObjectType, $data, $id);
-                  }else { */
-                $s = $sfObject->insert($sObjectType, $data);
-
-                var_dump($s[0]->success);
-                p_r($s);
-                die;
-                /* } */
-            }
-        }
-
-
-        die('dd');
-        return new Response('Hello world from salesforceconnect');
-    }
 
     /**
      * @Route("/pimfields/{class_name}", name="get_pimfields")
      */
-    public function getpimfieldsAction(Request $request) {
+    public function getpimfieldsAction(Request $request)
+    {
 
         $pimClass = $request->get('class_name');
-        $fields = \Pimcore\Model\DataObject\ClassDefinition::getById($pimClass);
+        $fields = ClassDefinition::getById($pimClass);
         $options = [];
+
         if ($fields) {
             foreach ($fields->getFieldDefinitions() as $field) {
-                if ($field->getFieldtype() != 'fieldcollections') {
-                    if ($field->getFieldtype() == 'objectbricks') {
-                        foreach ($field->allowedTypes as $bricks) {
-                            $brickDef = \Pimcore\Model\DataObject\Objectbrick\Definition :: getByKey($bricks);
-                            foreach ($brickDef->getFieldDefinitions() as $child) {
-                                $options[] = array("key" => $field->getTitle() . '-' . $bricks . '-' . $child->getName(), "value" => $field->getName() . '-' . $bricks . '-' . $child->getName());
-                            }
-                        }
+
+                if ($field->getFieldtype() == 'localizedfields') {
+                    foreach ($field->getFieldDefinitions() as $child) {
+                        $options[] = array("name" => $child->getTitle(), "id" => $child->getName());
                     }
-                    if ($field->getFieldtype() == 'localizedfields') {
-                        foreach ($field->getFieldDefinitions() as $child) {
-                            $options[] = array("key" => $child->getTitle(), "value" => $child->getName());
-                        }
-                    } else {
-                        $options[] = array("key" => $field->getTitle(), "value" => $field->getName());
-                    }
+                } else {
+                    $options[] = array("name" => $field->getTitle(), "id" => $field->getName());
                 }
             }
         }
-        $options[] = array("key" => 'Parent Id', "value" => 'parent');
-        $result = array('success' => 1, 'data' => $options);
+        $result = array('fields' => $options);
         echo json_encode($result);
         die;
     }
@@ -135,35 +55,40 @@ class DefaultController extends FrontendController {
     /**
      * @Route("/sffields/{class_name}", name="get_sffields")
      */
-    public function getsffieldsAction(Request $request) {
+    public function getsffieldsAction(Request $request)
+    {
 
         $sfClass = $request->get('class_name');
         $sfObject = new Sfconnect();
-        $options = $sfObject->getObjectsFields($sfClass);
-
-        $result = array('success' => 1, 'data' => $options);
-        echo json_encode($result);
+        if($sfObject->authData) {
+            $options = $sfObject->getObjectsFields($sfClass);
+            $result = array('objects' => $options);
+            echo json_encode($result);
+        }
         die;
     }
 
     /**
      * @Route("/sf-object", name="get_sfobject")
      */
-    public function getSfObjectAction(Request $request) {
+    public function getSfObjectAction(Request $request)
+    {
 
 
         $sfObject = new Sfconnect();
-
-        $options = $sfObject->getObjects();
-        $result = array('success' => 1, 'data' => $options);
-        echo json_encode($result);
+        if($sfObject->authData) {
+            $options = $sfObject->getObjects();
+            $result = array('objects' => $options);
+            echo json_encode($result);
+        }
         die;
     }
 
     /**
      * @Route("/pim-object", name="get_pimobject")
      */
-    public function getPimObjectAction(Request $request) {
+    public function getPimObjectAction(Request $request)
+    {
 
 
         $list = new ClassDefinition\Listing();
@@ -172,13 +97,149 @@ class DefaultController extends FrontendController {
         if ($list) {
             foreach ($list->getClasses() as $class) {
                 if ($class->getId() != 'salesforce_setup') {
-                    $options[] = array("key" => $class->getName(), "value" => $class->getId());
+                    $options[] = array("name" => $class->getName(), "id" => $class->getId());
                 }
             }
         }
-        $result = array('success' => 1, 'data' => $options);
+        $result = array('classes' => $options);
         echo json_encode($result);
         die;
     }
+
+     /**
+     * @Route("/save-basic-config")
+     */
+    public function saveBasicConfig(Request $request)
+    {
+        $mappingId = $request->get('mappingId');
+        $pimcoreClassId = $request->get('pimcoreClassId'.$mappingId);
+        $salesforceObjectId = $request->get('salesforceObjectId'.$mappingId);
+        $pimUniqueField = $request->get('pimUniqueField'.$mappingId);
+        $sfUniqueField = $request->get('sfUniqueField'.$mappingId);
+        $fieldForSfId = $request->get('fieldForSfId'.$mappingId);
+        $mappingJson = $request->get('mappingJson');
+        $lang = $request->get('lang');
+        $importFileUploadPath = $request->get('importObjectPath');
+
+
+        $mapping = Mapping::getById($mappingId);
+        if($mapping){
+            if($pimcoreClassId ){
+                $mapping->setPimcoreClassId($pimcoreClassId);
+            }
+            if($salesforceObjectId ){
+                $mapping->setSalesforceObject($salesforceObjectId );
+            }
+            if($pimUniqueField ){
+                $mapping->setPimcoreUniqueField($pimUniqueField);
+            }
+            if($sfUniqueField ){
+                $mapping->setSalesforceUniqueField($sfUniqueField );
+            }
+            if($fieldForSfId ){
+                $mapping->setFieldForSfId($fieldForSfId );
+            }
+            if($mappingJson){
+                $mapping->setColumnAttributeMapping($mappingJson);
+            }
+            if($lang){
+                $mapping->setLanguage($lang);
+            }
+            if($importFileUploadPath){
+                $mapping->setImportFileUploadPath($importFileUploadPath);
+                $folder =  DataObject::getByPath($importFileUploadPath);
+                $mapping->setImportFilePathId($folder->getId());
+            }
+            $mapping->save();
+            return $this->json([
+                'success' => true
+            ]);
+        }else {
+            $msg = $this->trans('psc_channel_not_found_relaod_admin');
+            return $this->json(['success' => false, 'msg' => $msg]);
+        }
+    }
+
+
+    /**
+     * @Route("/get-available-languages")
+     * @return JsonResponse
+     */
+    public function getAvailableLanguagesAction() {
+
+        $locales = \Pimcore\Tool::getSupportedLocales();
+        $availableLanguages = \Pimcore\Tool::getValidLanguages();
+        $fieldArray = array();
+
+        foreach ($availableLanguages as $language) {
+            $fieldArrayTemp = array();
+            $fieldArrayTemp['name'] = $locales[$language];
+            $fieldArrayTemp['value'] = $language;
+            $fieldArray[] = $fieldArrayTemp;
+        }
+
+        return $this->json(["languages" => $fieldArray]);
+    }
+
+    /**
+     * @Route("/get-class-definition-for-column-config", methods={"GET"})
+     *
+     * @param Request $request
+     *
+     * @return \Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse
+     * @throws Exception
+     */
+    public function getClassDefinitionForColumnConfigAction(Request $request)
+    {
+        $class = DataObject\ClassDefinition::getById($request->get('id'));
+        $objectId = intval($request->get('oid'));
+        $filteredDefinitions = DataObject\Service::getCustomLayoutDefinitionForGridColumnConfig($class, $objectId);
+        $layoutDefinitions = isset($filteredDefinitions['layoutDefinition']) ? $filteredDefinitions['layoutDefinition'] : false;
+        $filteredFieldDefinition = isset($filteredDefinitions['fieldDefinition']) ? $filteredDefinitions['fieldDefinition'] : false;
+        $class->setFieldDefinitions([]);
+        $result = [];
+        $result['objectColumns']['childs'] = $layoutDefinitions->getChilds();
+        $result['objectColumns']['nodeLabel'] = 'object_columns';
+        $result['objectColumns']['nodeType'] = 'object';
+        Services\ClassificationStoreService::updateObjectLayout($filteredDefinitions);
+        Services\ClassificationStoreService::setBricksLayout($class, $result, $filteredFieldDefinition);
+
+      return $this->adminJson($result);
+    }
+
+    /**
+     * @Route("/get-classification-store-for-column-config", methods={"GET"})
+     *
+     * @param Request $request
+     *
+     * @return \Pimcore\Bundle\AdminBundle\HttpFoundation\JsonResponse
+     * @throws Exception
+     */
+    public function getClassificationStoreForColumnConfigAction(Request $request){
+        $request =  Services\ClassificationStoreService::getStore($request->get('id'));
+        return $this->adminJson($request);
+     }
+
+     /**
+     * Get sheet header columns
+     * @Route("/mapping-header-import")
+     * @param Request $request
+     * @return string|JsonResponse
+     */
+    public function columnHeaderImportAction(Request $request) {
+        $mappingId = intval($request->get('id'));
+        $rowsColumns = array();
+        $success = false;
+        $config = [];
+        try {
+            $rowsColumns = Services\MappingService::getSheetColumns($mappingId);
+        } catch (\Exception $e) {
+           return $this->json([self::SUCCESS => false, self::MESSAGE => $e->getMessage()]);
+        }
+        $success = ((isset($rowsColumns['col']) && count($rowsColumns['col']) > 0));
+        $msg = (isset($rowsColumns['col']) && count($rowsColumns['col']) > 0) ? $success : "psc_invalid_header_row_no";
+        return $this->json([self::SUCCESS => $success, 'rowColumns' => $rowsColumns['col'], "config" => $rowsColumns['config'], self::MESSAGE => $msg]);
+    }
+
 
 }

@@ -1,187 +1,45 @@
-pimcore.registerNS("pimcore.plugin.SyncrasySalesforceBundle");
+pimcore.registerNS("pimcore.plugin.SyncrasyPimcoreSalesforceBundle");
 
-pimcore.plugin.SyncrasySalesforceBundle = Class.create(pimcore.plugin.admin, {
+pimcore.plugin.SyncrasyPimcoreSalesforceBundle = Class.create(pimcore.plugin.admin, {
     getClassName: function () {
-        return "pimcore.plugin.SyncrasySalesforceBundle";
+        return "pimcore.plugin.SyncrasyPimcoreSalesforceBundle";
     },
 
     initialize: function () {
         pimcore.plugin.broker.registerPlugin(this);
     },
 
-    pimcoreReady: function (params, broker) {
-        // alert("SyncrasySalesforceBundle ready!");
+    pimcoreReady: function (params,broker){
+        var extrasMenu = pimcore.globalmanager.get("layout_toolbar").extrasMenu;
+        if(extrasMenu){
+            extrasMenu.insert(extrasMenu.items.length+1, {
+                text: t("psc_plugin"),
+                iconCls: "psc_icon",
+                cls: "pimcore_main_menu",
+                handler: this.showSalesforceConnector.bind(this)
+            }
+            );
+        }
+        if(extrasMenu){
+            extrasMenu.updateLayout();
+        }
+        this.getConfig();
     },
-    postOpenObject: function (object, type) {
-        console.log('-------------');
-        if (typeof object.edit != 'undefined' && object.data.general.o_className == 'SelesForceSetup') {
-            var pimClassChange = object.edit.dataFields.pimcoreclass.component;
-            var objectData = object.data.data.fieldmapping;
-            console.log('-------------',object.data.data);
-            var pimClassFields;
-            var sfObjectChange = object.edit.dataFields.salesforceobject.component;
-            SyncrasySalesforceBundlePlugin.getSfClassAjax(function(store){
-                sfObjectChange.setStore(store);
-                sfObjectChange.setValue(object.data.data.salesforceobject);
-                console.log('------sfObjectChange.getValue()-------',sfObjectChange.getValue());
-                if(sfObjectChange.getValue()!='') {
-                SyncrasySalesforceBundlePlugin.getSfFieldAjax(sfObjectChange.getValue(), function (store) {
-                    sfObjectFields = store;
-                });
-            }
-                
-            });
-            SyncrasySalesforceBundlePlugin.getPimClassAjax(function(store){
-                pimClassChange.setStore(store);
-                pimClassChange.setValue(object.data.data.pimcoreclass);
-                if(pimClassChange.getValue() != '') {
-                SyncrasySalesforceBundlePlugin.getPimFieldAjax(pimClassChange.getValue(), function (store) {
-                    pimClassFields = store;
-                });
-            }
-            });
-            pimClassChange.addListener('select', function (combo, record, eOpts) {
-                if(record.data.value != '') {
-                    SyncrasySalesforceBundlePlugin.getPimFieldAjax(record.data.value, function (store) {
-                        pimClassFields = store;
-                    });
-                }
-            });
-            
-            
-
-
-            
-            
-            var sfObjectFields;
-            sfObjectChange.addListener('select', function (combo, record, eOpts) {
-                if(record.data.value != '') {
-                    SyncrasySalesforceBundlePlugin.getSfFieldAjax(record.data.value, function (store) {
-                        sfObjectFields = store;
-                    });
-                }
-            });
-            
-           
-
-
-            var tabPanel = object.edit.layout.items.items[0];
-            tabPanel.addListener('tabchange', function (tabPanel, newTab, oldTab, eOpts) {
-                if (newTab.title == 'Fields Mapping') {
-                    newTab.items.items[0].addListener('add', function (panelAdd, addBlock) {
-                        if (addBlock.items.items.length > 1) {
-                            addBlock.items.items[1].items.items[0].setStore(pimClassFields);
-                            addBlock.items.items[1].items.items[1].setStore(sfObjectFields);
-                        }
-                    });
-                    var i = 0;
-                    
-                    newTab.items.items[0].items.items.forEach(function (item) {
-                        item.items.items[1].items.items[0].setStore(pimClassFields);
-                        if(objectData[i] !== undefined)
-                        item.items.items[1].items.items[0].setValue(objectData[i].data.pimcoreclassfield);
-
-                        item.items.items[1].items.items[1].setStore(sfObjectFields);
-                        if(objectData[i] !== undefined)
-                        item.items.items[1].items.items[1].setValue(objectData[i].data.salesforceobjectfield);
-                        i++;
-                    });
-                }
-            });
+    showSalesforceConnector: function(config){
+       
+        console.log(pimcore.globalmanager.get("psc_plugin_cnf"));
+        console.log(Ext.getCmp("pimcore_plugin_psc_panel"));
+        if (pimcore.globalmanager.get("psc_plugin_cnf")) {
+            return Ext.getCmp("pimcore_panel_tabs").setActiveItem("pimcore_plugin_psc_panel");
+        } else {
+            return pimcore.globalmanager.add("psc_plugin_cnf", new pimcore.plugin.SyncrasyPimcoreSalesforceBundle.panel.main(config));
         }
 
     },
-
-    getPimFieldAjax: function (classVal, callback) {
-        var pimClassFields;
-        Ext.Ajax.request({
-            method: 'get',
-            url: "/pimfields/" + classVal,
-            success: function (response) {
-                let data = Ext.JSON.decode(response.responseText);
-                if (data.success) {
-                    options = data.data;
-                    console.log('--------options-------',options);
-                    pimClassFields = Ext.create('Ext.data.Store', {
-                        fields: ['value', 'key'],
-                        data: options
-                    });
-                    return callback(pimClassFields);
-                }
-            },
-            failure: function () {
-                console.log('failure');
-            }
-        });
-
-    },
-    getPimClassAjax: function (callback) {
-        var pimClassFields;
-        Ext.Ajax.request({
-            method: 'get',
-            url: "/pim-object",
-            success: function (response) {
-                let data = Ext.JSON.decode(response.responseText);
-                if (data.success) {
-                    options = data.data;
-                    pimClassFields = Ext.create('Ext.data.Store', {
-                        fields: ['value', 'key'],
-                        data: options
-                    });
-                    return callback(pimClassFields);
-                }
-            },
-            failure: function () {
-                console.log('failure');
-            }
-        });
-
-    },
-    getSfClassAjax: function (callback) {
-        var pimClassFields;
-        Ext.Ajax.request({
-            method: 'get',
-            url: "/sf-object",
-            success: function (response) {
-                let data = Ext.JSON.decode(response.responseText);
-                if (data.success) {
-                    options = data.data;
-                    pimClassFields = Ext.create('Ext.data.Store', {
-                        fields: ['value', 'key'],
-                        data: options
-                    });
-                    return callback(pimClassFields);
-                }
-            },
-            failure: function () {
-                console.log('failure');
-            }
-        });
-
-    },
-    getSfFieldAjax: function (classVal, callback) {
-        var pimClassFields;
-        Ext.Ajax.request({
-            method: 'get',
-            url: "/sffields/" + classVal,
-            success: function (response) {
-                let data = Ext.JSON.decode(response.responseText);
-                if (data.success) {
-                    options = data.data;
-                    pimClassFields = Ext.create('Ext.data.Store', {
-                        fields: ['value', 'key'],
-                        data: options
-                    });
-                    return callback(pimClassFields);
-                }
-            },
-            failure: function () {
-                console.log('failure');
-            }
-        });
+    getConfig : function(){
 
     }
-    
+
 });
 
-var SyncrasySalesforceBundlePlugin = new pimcore.plugin.SyncrasySalesforceBundle();
+var SyncrasyPimcoreSalesforceBundlePlugin = new pimcore.plugin.SyncrasyPimcoreSalesforceBundle();

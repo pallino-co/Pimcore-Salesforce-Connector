@@ -7,13 +7,13 @@
   },
   "autoload": {
     "psr-4": {
-        "Syncrasy\\SalesforceBundle\\": ""
+        "Syncrasy\\PimcoreSalesforceBundle\\": ""
     }
   },
   "extra": {
     "pimcore": {
       "bundles": [
-        "Syncrasy\\SalesforceBundle\\SyncrasySalesforceBundle"
+        "Syncrasy\\PimcoreSalesforceBundle\\SyncrasyPimcoreSalesforceBundle"
       ]
     }
   }
