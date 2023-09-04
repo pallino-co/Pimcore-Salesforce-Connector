@@ -1,12 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Syncrasy\PimcoreSalesforceBundle;
 
-
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
+use Pimcore\Extension\Bundle\Installer\InstallerInterface;
 use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Syncrasy\PimcoreSalesforceBundle\Installer\Installer;
-
 
 class SyncrasyPimcoreSalesforceBundle extends AbstractPimcoreBundle
 {
@@ -23,7 +22,7 @@ class SyncrasyPimcoreSalesforceBundle extends AbstractPimcoreBundle
             '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/configItem.js',
             '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/tabs/basicConfig.js',
             '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/tabs/columnConfiguration.js',
-            '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/helpers/classTree.js'
+            '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/helpers/classTree.js',
         ];
     }
 
@@ -34,7 +33,8 @@ class SyncrasyPimcoreSalesforceBundle extends AbstractPimcoreBundle
         ];
     }
 
-    public function getInstaller(){
+    public function getInstaller(): ?InstallerInterface
+    {
         return $this->container->get(Installer::class);
     }
 
@@ -43,9 +43,8 @@ class SyncrasyPimcoreSalesforceBundle extends AbstractPimcoreBundle
         return 'syncrasy/pimcore-salesforce-bundle';
     }
 
-    public function getNiceName()
+    public function getNiceName(): string
     {
         return self::BUNDLE_NAME;
     }
-
 }

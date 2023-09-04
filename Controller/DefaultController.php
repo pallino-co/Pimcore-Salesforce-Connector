@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Syncrasy\PimcoreSalesforceBundle\Controller;
 
-use Pimcore\Bundle\AdminBundle\Controller\AdminController;
+use Pimcore\Bundle\AdminBundle\Controller\AdminAbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Syncrasy\PimcoreSalesforceBundle\Model\Mapping;
@@ -15,7 +15,7 @@ use Syncrasy\PimcoreSalesforceBundle\Services;
  * @package PimcoreSalesforceBundle\Controller
  * @Route("/admin/pimcoresalesforce/default")
  */
-class DefaultController extends AdminController
+class DefaultController extends AdminAbstractController
 {
     protected const SUCCESS = 'success';
     protected const ERROR = 'error';

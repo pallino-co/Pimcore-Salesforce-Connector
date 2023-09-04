@@ -3,7 +3,8 @@
   "type": "pimcore-bundle",
   "description": "Pimcore-Salesforce Connector",
   "require": {
-    "pimcore/pimcore": ">=10.0"
+    "pimcore/pimcore": ">=10.0",
+    "pimcore/admin-ui-classic-bundle": "^1.1"
   },
   "autoload": {
     "psr-4": {

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Syncrasy\PimcoreSalesforceBundle\Command;
 
@@ -34,18 +34,14 @@ class SalesforceFatchDataCommand extends AbstractCommand
                 InputOption::VALUE_REQUIRED
 
             );
-
     }
 
-    public  function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         $id = $input->getOption('id');
         $mappingObject = Mapping::getById($id);
         if ($mappingObject) {
-
             $columnAttributeMapping = json_decode($mappingObject->getColumnAttributeMapping(), true);
-
-
 
             $sfObject = new Sfconnect();
             $sObjectType = $mappingObject->getsalesforceobject();
@@ -59,14 +55,15 @@ class SalesforceFatchDataCommand extends AbstractCommand
 
             $fields = $exportService->getFieldsForExport();
 
-            $query = $sfObject->recordsQuery($sObjectType , $fields);
+            $query = $sfObject->recordsQuery($sObjectType, $fields);
             $records = $sfObject->queryAll($query);
 
             $classDefenction = DataObject\ClassDefinition::getById($pimcoreClassType);
             $pimcoreClassName = $classDefenction->getName();
 
-            $exportService->setImportDataForPimcore($pimcoreClassName ,$parentFolderId, $fields, $mappingObject->getLanguage(), $records, $fieldforsfid,$output,false);
+            $exportService->setImportDataForPimcore($pimcoreClassName, $parentFolderId, $fields, $mappingObject->getLanguage(), $records, $fieldforsfid, $output, false);
         }
+
         return Command::SUCCESS;
     }
 }
