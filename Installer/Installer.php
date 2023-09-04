@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Syncrasy\PimcoreSalesforceBundle\Installer;
 
@@ -100,7 +100,7 @@ class Installer extends SettingsStoreAwareInstaller
     /**
      * {@inheritdoc}
      */
-    public function needsReloadAfterInstall()
+    public function needsReloadAfterInstall(): bool
     {
         return true;
     }
