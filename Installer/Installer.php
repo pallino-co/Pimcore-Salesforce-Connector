@@ -69,7 +69,7 @@ class Installer extends SettingsStoreAwareInstaller
     /**
      * {@inheritdoc}
      */
-    public function uninstall()
+    public function uninstall(): void
     {
         $sourceInstallPath = __DIR__;
         $rootPath = substr($sourceInstallPath, 0, strpos($sourceInstallPath, 'src'));
