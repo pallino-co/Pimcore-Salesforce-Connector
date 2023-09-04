@@ -6,6 +6,7 @@ use Monolog\Formatter\LineFormatter;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\RotatingFileHandler;
+use Pimcore\Bundle\ApplicationLoggerBundle\ApplicationLogger;
 
 /**
  * Class Logger
@@ -86,7 +87,7 @@ class PSCLogger
 
     public static function logInApplicationLogger($logDetails)
     {
-        $logger = \Pimcore\Log\ApplicationLogger::getInstance($logDetails['source'],true);
+        $logger = ApplicationLogger::getInstance($logDetails['source'],true);
         $logger->log($logDetails['type'], $logDetails['message']);
 
     }

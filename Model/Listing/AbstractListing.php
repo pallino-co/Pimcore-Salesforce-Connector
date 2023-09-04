@@ -2,22 +2,19 @@
 
 namespace Syncrasy\PimcoreSalesforceBundle\Model\Listing;
 
-
 class AbstractListing extends \Pimcore\Model\Listing\AbstractListing
 {
+    public $items = [];
 
-    public $items = array();
-
-
-    public function isValidOrderKey($key)
+    public function isValidOrderKey($key): bool
     {
         return true;
     }
 
-
     public function setItems($items)
     {
         $this->items = $items;
+
         return $this;
     }
 
@@ -25,5 +22,4 @@ class AbstractListing extends \Pimcore\Model\Listing\AbstractListing
     {
         return $this->items;
     }
-
 }

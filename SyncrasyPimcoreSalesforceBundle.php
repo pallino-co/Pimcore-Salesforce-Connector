@@ -2,10 +2,12 @@
 
 namespace Syncrasy\PimcoreSalesforceBundle;
 
+
 use Pimcore\Extension\Bundle\AbstractPimcoreBundle;
-use Pimcore\Extension\Bundle\Installer\InstallerInterface;
 use Pimcore\Extension\Bundle\Traits\PackageVersionTrait;
 use Syncrasy\PimcoreSalesforceBundle\Installer\Installer;
+use Pimcore\Extension\Bundle\Installer\InstallerInterface;
+
 
 class SyncrasyPimcoreSalesforceBundle extends AbstractPimcoreBundle
 {
@@ -22,7 +24,7 @@ class SyncrasyPimcoreSalesforceBundle extends AbstractPimcoreBundle
             '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/configItem.js',
             '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/tabs/basicConfig.js',
             '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/tabs/columnConfiguration.js',
-            '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/helpers/classTree.js',
+            '/bundles/syncrasypimcoresalesforce/js/pimcore/panel/helpers/classTree.js'
         ];
     }
 
@@ -47,4 +49,5 @@ class SyncrasyPimcoreSalesforceBundle extends AbstractPimcoreBundle
     {
         return self::BUNDLE_NAME;
     }
+
 }
